@@ -1189,7 +1189,13 @@ function App() {
         </div>
       </header>
 
-      <section id="home" className="hero" style={{ "--hero-image": `url(${heroImageUrl})` }}>
+      <section
+        id="home"
+        className="hero"
+        style={{
+          backgroundImage: `linear-gradient(rgba(11, 76, 121, 0.8), rgba(11, 62, 97, 0.82)), url("${heroImageUrl}")`
+        }}
+      >
         <div className="container hero-content">
           <p className="hero-tag">{copy.hero.tag}</p>
           <h1>
