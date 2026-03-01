@@ -225,6 +225,7 @@ async function createSchema(db) {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       full_name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
+      phone TEXT NOT NULL DEFAULT '',
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -249,6 +250,14 @@ async function createSchema(db) {
       FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
     );
   `);
+
+  await db.exec(`
+    ALTER TABLE students ADD COLUMN phone TEXT NOT NULL DEFAULT '';
+  `).catch((error) => {
+    if (!String(error?.message || "").includes("duplicate column name")) {
+      throw error;
+    }
+  });
 }
 
 async function seedDatabase(db) {
@@ -321,4 +330,3 @@ async function initDb() {
 }
 
 export { initDb };
-

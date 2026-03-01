@@ -14,6 +14,7 @@ const clientIndexPath = path.join(clientDistPath, "index.html");
 const hasClientBuild = fs.existsSync(clientIndexPath);
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_ALLOWED_CHARS_REGEX = /^[0-9+\-().\s]+$/;
 const port = Number(process.env.PORT || 4000);
 const app = express();
 
@@ -57,6 +58,7 @@ async function buildEnrollmentProgress(db, enrollmentId) {
         s.id AS studentId,
         s.full_name AS studentName,
         s.email AS studentEmail,
+        s.phone AS studentPhone,
         c.id AS courseId,
         c.title AS courseTitle,
         c.level AS courseLevel,
@@ -278,6 +280,7 @@ app.post("/api/enrollments", async (req, res, next) => {
     const email = String(req.body?.email || "")
       .trim()
       .toLowerCase();
+    const phone = String(req.body?.phone || "").trim();
     const courseId = parsePositiveId(req.body?.courseId);
 
     if (fullName.length < 2) {
@@ -285,6 +288,9 @@ app.post("/api/enrollments", async (req, res, next) => {
     }
     if (!EMAIL_REGEX.test(email)) {
       return res.status(400).json({ message: "email is invalid" });
+    }
+    if (phone.length < 6 || phone.length > 30 || !PHONE_ALLOWED_CHARS_REGEX.test(phone)) {
+      return res.status(400).json({ message: "phone is invalid" });
     }
     if (!courseId) {
       return res.status(400).json({ message: "courseId must be a positive integer" });
@@ -297,15 +303,20 @@ app.post("/api/enrollments", async (req, res, next) => {
 
     await db.run(
       `
-        INSERT INTO students (full_name, email)
-        VALUES (?, ?)
-        ON CONFLICT(email) DO UPDATE SET full_name = excluded.full_name
+        INSERT INTO students (full_name, email, phone)
+        VALUES (?, ?, ?)
+        ON CONFLICT(email) DO UPDATE
+          SET full_name = excluded.full_name, phone = excluded.phone
       `,
       fullName,
-      email
+      email,
+      phone
     );
 
-    const student = await db.get("SELECT id, full_name AS fullName, email FROM students WHERE email = ?", email);
+    const student = await db.get(
+      "SELECT id, full_name AS fullName, email, phone FROM students WHERE email = ?",
+      email
+    );
 
     await db.run("INSERT OR IGNORE INTO enrollments (student_id, course_id) VALUES (?, ?)", student.id, courseId);
 
@@ -485,4 +496,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-

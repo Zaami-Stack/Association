@@ -21,6 +21,7 @@ import {
 const initialEnrollForm = {
   fullName: "",
   email: "",
+  phone: "",
   courseId: ""
 };
 
@@ -205,13 +206,14 @@ function App() {
       const payload = {
         fullName: enrollForm.fullName.trim(),
         email: enrollForm.email.trim().toLowerCase(),
+        phone: enrollForm.phone.trim(),
         courseId: Number(enrollForm.courseId)
       };
       const response = await enrollStudent(payload);
       setEnrollMessage(
         `Enrollment saved for ${response.student.fullName} in "${response.course.title}".`
       );
-      setEnrollForm((previous) => ({ ...previous, fullName: "", email: "" }));
+      setEnrollForm((previous) => ({ ...previous, fullName: "", email: "", phone: "" }));
       await Promise.all([refreshPublicData(), isAdmin ? refreshAdminStudents() : Promise.resolve()]);
     } catch (error) {
       setEnrollMessage(error.message || "Enrollment failed.");
@@ -622,8 +624,7 @@ function App() {
           <div>
             <h2>Enroll a Student</h2>
             <p>
-              Use this form to register a student with email and name, then connect them to the
-              right course.
+              Use this form to register a student with full name, email, and phone number.
             </p>
           </div>
           <form className="enroll-form" onSubmit={handleEnrollSubmit}>
@@ -642,6 +643,15 @@ function App() {
               value={enrollForm.email}
               onChange={(event) =>
                 setEnrollForm((previous) => ({ ...previous, email: event.target.value }))
+              }
+              required
+            />
+            <input
+              type="tel"
+              placeholder="Phone number"
+              value={enrollForm.phone}
+              onChange={(event) =>
+                setEnrollForm((previous) => ({ ...previous, phone: event.target.value }))
               }
               required
             />
@@ -792,7 +802,7 @@ function App() {
 
             <article className="admin-card student-card">
               <div className="student-head">
-                <h3>Track Students</h3>
+                <h3>Student Contacts</h3>
                 <button type="button" className="secondary-btn" onClick={() => refreshAdminStudents()}>
                   Refresh
                 </button>
@@ -807,12 +817,7 @@ function App() {
                     <div className="student-main">
                       <strong>{student.fullName}</strong>
                       <p>{student.email}</p>
-                    </div>
-                    <div className="student-metrics">
-                      <span>Enrollments: {student.enrollmentCount}</span>
-                      <span>
-                        Progress: {student.completedLessons}/{student.totalLessons} ({student.completionRate}%)
-                      </span>
+                      <p>{student.phone || "No phone provided"}</p>
                     </div>
                   </div>
                 ))}

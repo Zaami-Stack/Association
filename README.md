@@ -36,6 +36,8 @@ URLs:
 
 1. Create a Supabase project.
 2. Run SQL from: `supabase/schema.sql`.
+   - If your database was created before the phone update, run:
+     `alter table if exists students add column if not exists phone text not null default '';`
 3. Add environment variables in Vercel project settings:
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
