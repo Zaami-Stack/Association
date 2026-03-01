@@ -60,7 +60,6 @@ const initialProgramForm = {
 };
 
 const HERO_IMAGE_URL = "/aaaaaaaaa.jfif";
-const WHATSAPP_URL = "https://wa.me/212681222459";
 
 const SUPPORTED_UI_LANGS = ["en", "fr", "es"];
 
@@ -1179,7 +1178,7 @@ function App() {
             <h4>{copy.about.placeTitle}</h4>
             <p>{copy.about.placeText}</p>
             <p className="about-phone">
-              <a href={WHATSAPP_URL} target="_blank" rel="noreferrer">
+              <a href="tel:+212681222459">
                 0681222459
               </a>
             </p>
@@ -1611,19 +1610,6 @@ function App() {
           </div>
         </section>
       ) : null}
-
-      <a
-        className="whatsapp-float"
-        href={WHATSAPP_URL}
-        target="_blank"
-        rel="noreferrer"
-        aria-label="Chat on WhatsApp"
-      >
-        <svg viewBox="0 0 32 32" aria-hidden="true">
-          <path d="M19.11 17.23c-.3-.16-1.74-.86-2.01-.96-.27-.1-.47-.16-.67.16-.2.3-.77.96-.94 1.16-.17.2-.34.23-.64.08-.3-.16-1.24-.46-2.37-1.46-.88-.78-1.48-1.74-1.66-2.03-.17-.3-.02-.46.13-.62.13-.13.3-.34.44-.5.15-.17.2-.3.3-.5.1-.2.05-.38-.02-.54-.08-.16-.67-1.62-.92-2.22-.24-.58-.48-.5-.67-.5h-.57c-.2 0-.5.08-.77.38-.27.3-1.03 1-1.03 2.44 0 1.44 1.05 2.83 1.2 3.03.15.2 2.06 3.13 5.02 4.4.7.3 1.25.48 1.68.62.7.22 1.35.2 1.86.12.57-.08 1.74-.7 1.99-1.37.25-.66.25-1.24.17-1.36-.07-.12-.26-.2-.56-.35z" />
-          <path d="M16 3.2A12.74 12.74 0 0 0 4.96 21.2L3.2 28.8l7.77-1.7A12.8 12.8 0 1 0 16 3.2zm0 23.28c-1.72 0-3.4-.45-4.87-1.3l-.35-.2-4.6 1 1.03-4.47-.23-.37a10.2 10.2 0 1 1 9.02 5.34z" />
-        </svg>
-      </a>
 
       <footer className="footer">
         <div className="container">
