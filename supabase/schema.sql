@@ -75,6 +75,12 @@ create table if not exists gallery_photos (
   created_at timestamptz not null default now()
 );
 
+create table if not exists site_settings (
+  setting_key text primary key,
+  setting_value text not null default '',
+  updated_at timestamptz not null default now()
+);
+
 alter table if exists students add column if not exists phone text not null default '';
 
 create index if not exists idx_languages_name on languages (name);
@@ -88,3 +94,4 @@ create index if not exists idx_lesson_progress_lesson on lesson_progress (lesson
 create index if not exists idx_users_email on users (email);
 create index if not exists idx_notifications_created_at on notifications (created_at desc);
 create index if not exists idx_gallery_position on gallery_photos (position asc, created_at desc);
+create index if not exists idx_site_settings_updated_at on site_settings (updated_at desc);

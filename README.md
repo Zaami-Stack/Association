@@ -38,6 +38,8 @@ URLs:
 2. Run SQL from: `supabase/schema.sql`.
    - If your database was created before the phone update, run:
      `alter table if exists students add column if not exists phone text not null default '';`
+   - If your database was created before hero-image settings support, run:
+     `create table if not exists site_settings (setting_key text primary key, setting_value text not null default '', updated_at timestamptz not null default now());`
 3. Add environment variables in Vercel project settings:
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
