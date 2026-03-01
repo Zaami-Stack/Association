@@ -876,8 +876,8 @@ function App() {
 
       <header className="header">
         <div className="container nav">
-          <div className="logo" aria-label="Maison de Savoir">
-            <div className="logo-text">Maison de Savoir</div>
+          <div className="logo" aria-label="La Maison du Savoir">
+            <div className="logo-text">La Maison du Savoir</div>
           </div>
 
           <div id="main-nav-panel" className={`nav-panel ${menuOpen ? "open" : ""}`}>
@@ -1349,7 +1349,7 @@ function App() {
 
       <footer className="footer">
         <div className="container">
-          <p>Maison de Savoir</p>
+          <p>La Maison du Savoir</p>
         </div>
       </footer>
 
