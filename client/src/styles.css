@@ -40,10 +40,11 @@ a {
 .header {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 70;
   background: linear-gradient(90deg, rgba(8, 49, 74, 0.94), rgba(7, 79, 103, 0.93));
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   backdrop-filter: blur(10px);
+  animation: slide-down 0.45s ease both;
 }
 
 .nav {
@@ -57,6 +58,61 @@ a {
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+.nav-panel {
+  display: block;
+}
+
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  border: 0;
+  background: rgba(4, 24, 39, 0.5);
+  padding: 0;
+}
+
+.menu-toggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0 10px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  box-shadow: none;
+}
+
+.menu-toggle:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.menu-toggle span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: #f4fbff;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.menu-toggle.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.menu-toggle.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 .auth-actions {
@@ -80,16 +136,7 @@ a {
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
   color: #f3fbff;
-}
-
-.logo img {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.46);
 }
 
 .logo-text {
@@ -244,6 +291,39 @@ a {
   color: #6a8299;
 }
 
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nav-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .hero {
   position: relative;
   overflow: hidden;
@@ -269,6 +349,7 @@ a {
   max-width: 780px;
   position: relative;
   z-index: 1;
+  animation: fade-up 0.75s ease both;
 }
 
 .hero-tag {
@@ -339,6 +420,7 @@ button:hover {
   border-radius: var(--radius);
   padding: 24px;
   box-shadow: 0 14px 24px rgba(14, 44, 75, 0.08);
+  animation: fade-up 0.66s ease both;
 }
 
 .about-card h3,
@@ -405,6 +487,7 @@ button:hover {
   border-radius: var(--radius);
   padding: 18px;
   text-align: center;
+  animation: fade-up 0.6s ease both;
 }
 
 .stat-card strong {
@@ -490,6 +573,7 @@ textarea {
   border-radius: var(--radius);
   background: var(--surface-strong);
   box-shadow: 0 14px 24px rgba(14, 44, 75, 0.08);
+  animation: fade-up 0.62s ease both;
 }
 
 .course-image {
@@ -556,6 +640,7 @@ textarea {
   border-radius: var(--radius);
   border: 1px solid var(--line);
   box-shadow: 0 12px 24px rgba(14, 44, 75, 0.12);
+  animation: fade-up 0.64s ease both;
 }
 
 .gallery-card img {
@@ -593,6 +678,7 @@ textarea {
   grid-template-columns: 1.1fr 1fr;
   gap: 22px;
   align-items: start;
+  animation: fade-up 0.65s ease both;
 }
 
 .enroll-form {
@@ -616,6 +702,7 @@ textarea {
   border-radius: var(--radius);
   background: #fff;
   padding: 16px;
+  animation: fade-up 0.62s ease both;
 }
 
 .admin-card h3 {
@@ -712,6 +799,7 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 10px;
+  animation: fade-up 0.55s ease both;
 }
 
 .student-main strong {
@@ -917,6 +1005,23 @@ textarea {
   background: transparent;
 }
 
+.stat-card:nth-child(2),
+.course-card:nth-child(2),
+.gallery-card:nth-child(2) {
+  animation-delay: 0.06s;
+}
+
+.stat-card:nth-child(3),
+.course-card:nth-child(3),
+.gallery-card:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+.stat-card:nth-child(4),
+.gallery-card:nth-child(4) {
+  animation-delay: 0.18s;
+}
+
 @media (max-width: 1050px) {
   .courses-grid,
   .enrollment-grid,
@@ -936,27 +1041,95 @@ textarea {
 
 @media (max-width: 760px) {
   .nav {
-    min-height: 72px;
+    min-height: 70px;
     padding: 12px 0;
-    gap: 10px;
-    align-items: flex-start;
-    flex-direction: column;
+    gap: 12px;
+    align-items: center;
   }
 
-  .nav nav {
-    gap: 12px;
-    flex-wrap: wrap;
+  .logo-text {
+    font-size: 1.4rem;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .nav-panel {
+    position: fixed;
+    left: 4vw;
+    right: 4vw;
+    top: 82px;
+    z-index: 80;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(170deg, rgba(6, 42, 63, 0.98), rgba(9, 70, 94, 0.98));
+    box-shadow: 0 18px 30px rgba(7, 29, 45, 0.35);
+    padding: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px) scale(0.98);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .nav-panel.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    animation: nav-panel-in 0.22s ease both;
   }
 
   .nav-actions {
     width: 100%;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .nav nav {
+    display: grid;
+    gap: 8px;
+  }
+
+  .nav nav a {
+    display: block;
+    border-bottom: 0;
+    border-left: 2px solid transparent;
+    padding: 8px 10px;
+    font-size: 0.82rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .nav nav a:hover {
+    border-color: #ffc9b8;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .notif-wrap {
+    align-self: flex-start;
   }
 
   .notif-menu {
-    top: 44px;
-    right: 0;
+    position: static;
+    top: auto;
+    right: auto;
+    margin-top: 8px;
+    width: min(330px, 100%);
+  }
+
+  .auth-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .auth-chip {
+    max-width: 100%;
+  }
+
+  .nav-small-btn {
+    flex: 1 1 130px;
   }
 
   .filters,
@@ -985,5 +1158,34 @@ textarea {
   .lesson-card {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+@media (max-width: 540px) {
+  .hero h1 {
+    font-size: clamp(1.72rem, 8vw, 2.3rem);
+  }
+
+  .hero-desc {
+    font-size: 0.94rem;
+  }
+
+  .logo-text {
+    font-size: 1.22rem;
+  }
+
+  .section-head h2,
+  .enroll-wrap h2 {
+    font-size: 1.62rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
   }
 }

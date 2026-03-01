@@ -88,6 +88,7 @@ function App() {
   const [enrollSubmitting, setEnrollSubmitting] = useState(false);
   const [enrollMessage, setEnrollMessage] = useState("");
 
+  const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
   const [adminStudents, setAdminStudents] = useState([]);
@@ -131,11 +132,30 @@ function App() {
       if (event.key === "Escape") {
         setNotifOpen(false);
         setAuthOpen(false);
+        setMenuOpen(false);
       }
     }
 
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    function closeOnDesktop() {
+      if (window.innerWidth > 760) {
+        setMenuOpen(false);
+      }
+    }
+
+    window.addEventListener("resize", closeOnDesktop);
+    return () => window.removeEventListener("resize", closeOnDesktop);
   }, []);
 
   useEffect(() => {
@@ -225,10 +245,16 @@ function App() {
   function jumpToEnroll(courseId) {
     setEnrollForm((previous) => ({ ...previous, courseId: String(courseId) }));
     setNotifOpen(false);
+    setMenuOpen(false);
     const target = document.getElementById("enroll");
     if (target) {
       target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+  }
+
+  function handleNavClick() {
+    setNotifOpen(false);
+    setMenuOpen(false);
   }
 
   function openAuth(mode) {
@@ -236,6 +262,7 @@ function App() {
     setAuthMessage("");
     setAuthOpen(true);
     setNotifOpen(false);
+    setMenuOpen(false);
   }
 
   async function handleLogin(event) {
@@ -284,6 +311,7 @@ function App() {
     } finally {
       setUser(null);
       setNotifOpen(false);
+      setMenuOpen(false);
     }
   }
 
@@ -376,84 +404,113 @@ function App() {
 
   return (
     <div className="page">
+      {menuOpen ? (
+        <button
+          type="button"
+          className="menu-backdrop"
+          aria-label="Close navigation menu"
+          onClick={() => {
+            setMenuOpen(false);
+            setNotifOpen(false);
+          }}
+        />
+      ) : null}
+
       <header className="header">
         <div className="container nav">
           <div className="logo" aria-label="Maison de Savoir">
-            <img src="/aaaaa.jfif" alt="Maison de Savoir logo" />
             <div className="logo-text">Maison de Savoir</div>
           </div>
 
-          <div className="nav-actions">
-            <nav>
-              <a href="#home" onClick={() => setNotifOpen(false)}>
+          <button
+            type="button"
+            className={`menu-toggle ${menuOpen ? "open" : ""}`}
+            aria-label="Toggle navigation menu"
+            aria-expanded={menuOpen}
+            aria-controls="main-nav-panel"
+            onClick={() => {
+              setMenuOpen((previous) => !previous);
+              setNotifOpen(false);
+            }}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+
+          <div id="main-nav-panel" className={`nav-panel ${menuOpen ? "open" : ""}`}>
+            <div className="nav-actions">
+              <nav>
+                <a href="#home" onClick={handleNavClick}>
                 Home
               </a>
-              <a href="#about" onClick={() => setNotifOpen(false)}>
+                <a href="#about" onClick={handleNavClick}>
                 About
               </a>
-              <a href="#courses" onClick={() => setNotifOpen(false)}>
+                <a href="#courses" onClick={handleNavClick}>
                 Courses
               </a>
-              <a href="#gallery" onClick={() => setNotifOpen(false)}>
+                <a href="#gallery" onClick={handleNavClick}>
                 Gallery
               </a>
-              <a href="#enroll" onClick={() => setNotifOpen(false)}>
+                <a href="#enroll" onClick={handleNavClick}>
                 Enroll
               </a>
-              {isAdmin ? (
-                <a href="#dashboard" onClick={() => setNotifOpen(false)}>
+                {isAdmin ? (
+                  <a href="#dashboard" onClick={handleNavClick}>
                   Dashboard
                 </a>
-              ) : null}
-            </nav>
+                ) : null}
+              </nav>
 
-            <div className="notif-wrap">
-              <button
-                type="button"
-                className="notif-btn"
-                aria-label="Notifications"
-                onClick={() => setNotifOpen((previous) => !previous)}
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M15 17h5l-1.4-1.4a2 2 0 0 1-.6-1.4V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5m6 0a3 3 0 1 1-6 0" />
-                </svg>
-                <span className="notif-badge">{notifications.length}</span>
-              </button>
+              <div className="notif-wrap">
+                <button
+                  type="button"
+                  className="notif-btn"
+                  aria-label="Notifications"
+                  onClick={() => setNotifOpen((previous) => !previous)}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 17h5l-1.4-1.4a2 2 0 0 1-.6-1.4V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5m6 0a3 3 0 1 1-6 0" />
+                  </svg>
+                  <span className="notif-badge">{notifications.length}</span>
+                </button>
 
-              {notifOpen ? (
-                <div className="notif-menu">
-                  <div className="notif-menu-title">Notifications</div>
-                  {notifications.length === 0 ? <p className="notif-empty">No notifications.</p> : null}
-                  {notifications.map((note) => (
-                    <article key={note.id} className="notif-item">
-                      <p>{note.title}</p>
-                      <span>{formatDate(note.createdAt)}</span>
-                    </article>
-                  ))}
-                </div>
-              ) : null}
-            </div>
+                {notifOpen ? (
+                  <div className="notif-menu">
+                    <div className="notif-menu-title">Notifications</div>
+                    {notifications.length === 0 ? <p className="notif-empty">No notifications.</p> : null}
+                    {notifications.map((note) => (
+                      <article key={note.id} className="notif-item">
+                        <p>{note.title}</p>
+                        <span>{formatDate(note.createdAt)}</span>
+                      </article>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
 
-            <div className="auth-actions">
-              {sessionLoading ? <span className="auth-chip">Loading...</span> : null}
-              {!sessionLoading && !user ? (
-                <>
-                  <button type="button" className="nav-small-btn" onClick={() => openAuth("login")}>
+              <div className="auth-actions">
+                {sessionLoading ? <span className="auth-chip">Loading...</span> : null}
+                {!sessionLoading && !user ? (
+                  <>
+                    <button type="button" className="nav-small-btn" onClick={() => openAuth("login")}>
                     Login
                   </button>
-                  <button type="button" className="nav-small-btn alt" onClick={() => openAuth("signup")}>
+                    <button type="button" className="nav-small-btn alt" onClick={() => openAuth("signup")}>
                     Sign Up
                   </button>
-                </>
-              ) : null}
-              {!sessionLoading && user ? (
-                <>
-                  <span className="auth-chip">{user.name || user.email}</span>
-                  <button type="button" className="nav-small-btn alt" onClick={handleLogout}>
+                  </>
+                ) : null}
+                {!sessionLoading && user ? (
+                  <>
+                    <span className="auth-chip">{user.name || user.email}</span>
+                    <button type="button" className="nav-small-btn alt" onClick={handleLogout}>
                     Logout
                   </button>
-                </>
-              ) : null}
+                  </>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
