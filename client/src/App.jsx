@@ -405,10 +405,9 @@ function App() {
   return (
     <div className="page">
       {menuOpen ? (
-        <button
-          type="button"
+        <div
           className="menu-backdrop"
-          aria-label="Close navigation menu"
+          aria-hidden="true"
           onClick={() => {
             setMenuOpen(false);
             setNotifOpen(false);

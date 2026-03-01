@@ -76,9 +76,8 @@ a {
   position: fixed;
   inset: 0;
   z-index: 60;
-  border: 0;
+  border-radius: 0;
   background: rgba(4, 24, 39, 0.5);
-  padding: 0;
 }
 
 .menu-toggle {
@@ -94,6 +93,7 @@ a {
   flex-direction: column;
   gap: 5px;
   box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .menu-toggle:hover {
@@ -109,6 +109,14 @@ a {
   border-radius: 999px;
   background: #f4fbff;
   transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.menu-toggle:focus {
+  outline: none;
+}
+
+.menu-toggle:focus-visible {
+  box-shadow: 0 0 0 2px rgba(255, 201, 184, 0.48);
 }
 
 .menu-toggle.open span:nth-child(1) {
