@@ -386,6 +386,9 @@ function App() {
               <a href="#home" onClick={() => setNotifOpen(false)}>
                 Home
               </a>
+              <a href="#about" onClick={() => setNotifOpen(false)}>
+                About
+              </a>
               <a href="#courses" onClick={() => setNotifOpen(false)}>
                 Courses
               </a>
@@ -467,6 +470,46 @@ function App() {
           <a className="hero-btn" href="#courses" onClick={() => setNotifOpen(false)}>
             Start Learning
           </a>
+        </div>
+      </section>
+
+      <section id="about" className="about">
+        <div className="container">
+          <div className="section-head">
+            <h2>GHAZOUA</h2>
+            <p>La maison du savoir</p>
+          </div>
+
+          <article className="about-card">
+            <h3>Accompagnement CNED - Primaire & Collège</h3>
+            <p className="about-quote">« Nous plantons des graines pour le futur »</p>
+            <p className="about-lead">Un cadre bienveillant pour apprendre autrement</p>
+            <p>
+              La Maison du Savoir accompagne les élèves du primaire et du collège inscrits au CNED,
+              dans un environnement serein, stimulant et personnalisé.
+            </p>
+
+            <h4>Notre accompagnement comprend:</h4>
+            <ul className="about-list">
+              <li>Accueil en journée, du lundi au vendredi</li>
+              <li>Encadrement par une équipe pédagogique bienveillante</li>
+              <li>Suivi individualisé des cours CNED</li>
+              <li>Petits groupes pour un apprentissage efficace</li>
+              <li>
+                Activités complémentaires : ateliers créatifs, jeux éducatifs, expression orale
+              </li>
+            </ul>
+
+            <h4>Un lieu chaleureux et inspirant</h4>
+            <p>
+              Située à Ghazoua (Km8, route de Sidi Kaouki), La Maison du Savoir est un espace calme
+              et lumineux, propice à la concentration et à l’épanouissement.
+            </p>
+            <p className="about-phone">
+              <a href="tel:+212724191970">0724 191 970</a>
+            </p>
+            <p className="about-end">Un lieu ouvert sur le monde, la nature et les savoirs.</p>
+          </article>
         </div>
       </section>
 
