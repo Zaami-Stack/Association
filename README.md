@@ -1,6 +1,6 @@
-# Association Language Academy (Full Stack)
+# Maison de Savoir
 
-This is a new full-stack project built from the same architecture as the flower app:
+This project is built from the same architecture as the flower app:
 
 - `client/`: React + Vite frontend
 - `server/`: Express API
