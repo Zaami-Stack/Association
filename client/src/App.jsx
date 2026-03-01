@@ -422,22 +422,6 @@ function App() {
             <div className="logo-text">Maison de Savoir</div>
           </div>
 
-          <button
-            type="button"
-            className={`menu-toggle ${menuOpen ? "open" : ""}`}
-            aria-label="Toggle navigation menu"
-            aria-expanded={menuOpen}
-            aria-controls="main-nav-panel"
-            onClick={() => {
-              setMenuOpen((previous) => !previous);
-              setNotifOpen(false);
-            }}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
-
           <div id="main-nav-panel" className={`nav-panel ${menuOpen ? "open" : ""}`}>
             <div className="nav-actions">
               <nav>
@@ -463,33 +447,6 @@ function App() {
                 ) : null}
               </nav>
 
-              <div className="notif-wrap">
-                <button
-                  type="button"
-                  className="notif-btn"
-                  aria-label="Notifications"
-                  onClick={() => setNotifOpen((previous) => !previous)}
-                >
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M15 17h5l-1.4-1.4a2 2 0 0 1-.6-1.4V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5m6 0a3 3 0 1 1-6 0" />
-                  </svg>
-                  <span className="notif-badge">{notifications.length}</span>
-                </button>
-
-                {notifOpen ? (
-                  <div className="notif-menu">
-                    <div className="notif-menu-title">Notifications</div>
-                    {notifications.length === 0 ? <p className="notif-empty">No notifications.</p> : null}
-                    {notifications.map((note) => (
-                      <article key={note.id} className="notif-item">
-                        <p>{note.title}</p>
-                        <span>{formatDate(note.createdAt)}</span>
-                      </article>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-
               <div className="auth-actions">
                 {sessionLoading ? <span className="auth-chip">Loading...</span> : null}
                 {!sessionLoading && !user ? (
@@ -512,6 +469,51 @@ function App() {
                 ) : null}
               </div>
             </div>
+          </div>
+
+          <div className="header-controls">
+            <div className="notif-wrap">
+              <button
+                type="button"
+                className="notif-btn"
+                aria-label="Notifications"
+                onClick={() => setNotifOpen((previous) => !previous)}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M15 17h5l-1.4-1.4a2 2 0 0 1-.6-1.4V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5m6 0a3 3 0 1 1-6 0" />
+                </svg>
+                <span className="notif-badge">{notifications.length}</span>
+              </button>
+
+              {notifOpen ? (
+                <div className="notif-menu">
+                  <div className="notif-menu-title">Notifications</div>
+                  {notifications.length === 0 ? <p className="notif-empty">No notifications.</p> : null}
+                  {notifications.map((note) => (
+                    <article key={note.id} className="notif-item">
+                      <p>{note.title}</p>
+                      <span>{formatDate(note.createdAt)}</span>
+                    </article>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            <button
+              type="button"
+              className={`menu-toggle ${menuOpen ? "open" : ""}`}
+              aria-label="Toggle navigation menu"
+              aria-expanded={menuOpen}
+              aria-controls="main-nav-panel"
+              onClick={() => {
+                setMenuOpen((previous) => !previous);
+                setNotifOpen(false);
+              }}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
           </div>
         </div>
       </header>

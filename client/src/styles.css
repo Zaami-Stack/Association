@@ -62,6 +62,14 @@ a {
 
 .nav-panel {
   display: block;
+  margin-left: auto;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 14px;
 }
 
 .menu-backdrop {
@@ -1045,6 +1053,7 @@ textarea {
     padding: 12px 0;
     gap: 12px;
     align-items: center;
+    justify-content: space-between;
   }
 
   .logo-text {
@@ -1053,7 +1062,6 @@ textarea {
 
   .menu-toggle {
     display: inline-flex;
-    margin-left: auto;
   }
 
   .nav-panel {
@@ -1107,16 +1115,8 @@ textarea {
     background: rgba(255, 255, 255, 0.12);
   }
 
-  .notif-wrap {
-    align-self: flex-start;
-  }
-
-  .notif-menu {
-    position: static;
-    top: auto;
-    right: auto;
-    margin-top: 8px;
-    width: min(330px, 100%);
+  .header-controls {
+    margin-left: 0;
   }
 
   .auth-actions {
