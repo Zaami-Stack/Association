@@ -905,6 +905,22 @@ function App() {
                 ) : null}
               </nav>
 
+              <div className="lang-picker">
+                <label htmlFor="ui-language" className="sr-only">
+                  {copy.language}
+                </label>
+                <select
+                  id="ui-language"
+                  aria-label={copy.language}
+                  value={uiLanguage}
+                  onChange={(event) => setUiLanguage(event.target.value)}
+                >
+                  <option value="en">English</option>
+                  <option value="fr">Francais</option>
+                  <option value="es">Espanol</option>
+                </select>
+              </div>
+
               <div className="auth-actions">
                 {sessionLoading ? <span className="auth-chip">{copy.auth.loading}</span> : null}
                 {!sessionLoading && !user ? (
@@ -930,22 +946,6 @@ function App() {
           </div>
 
           <div className="header-controls">
-            <div className="lang-picker">
-              <label htmlFor="ui-language" className="sr-only">
-                {copy.language}
-              </label>
-              <select
-                id="ui-language"
-                aria-label={copy.language}
-                value={uiLanguage}
-                onChange={(event) => setUiLanguage(event.target.value)}
-              >
-                <option value="en">English</option>
-                <option value="fr">Francais</option>
-                <option value="es">Espanol</option>
-              </select>
-            </div>
-
             <div className="notif-wrap">
               <button
                 type="button"
