@@ -70,17 +70,6 @@ function getGalleryPhotos() {
   return request("/gallery");
 }
 
-function getHeroImage() {
-  return request("/hero");
-}
-
-function updateHeroImage(payload) {
-  return request("/hero", {
-    method: "PATCH",
-    body: JSON.stringify(payload)
-  });
-}
-
 function createGalleryPhoto(payload) {
   return request("/gallery", {
     method: "POST",
@@ -183,7 +172,6 @@ export {
   getCourses,
   getEnrollmentProgress,
   getGalleryPhotos,
-  getHeroImage,
   getLanguages,
   getNotifications,
   getSession,
@@ -193,7 +181,6 @@ export {
   logout,
   signup,
   updateCourse,
-  updateHeroImage,
   updateGalleryPhoto,
   updateLessonProgress
 };
