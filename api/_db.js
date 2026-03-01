@@ -1,4 +1,4 @@
-const { seedFlowers } = require("./_store");
+const { seedCourses, seedLanguages, seedLessons } = require("./_store");
 
 function getSupabaseUrl() {
   return String(process.env.SUPABASE_URL || "").trim().replace(/\/$/, "");
@@ -17,7 +17,14 @@ function toInFilter(values) {
   return `in.(${safeValues.join(",")})`;
 }
 
-async function dbRequest({ table, method = "GET", query = {}, body, prefer = "return=representation" }) {
+async function dbRequest({
+  table,
+  method = "GET",
+  query = {},
+  body,
+  prefer = "return=representation",
+  headers: extraHeaders = {}
+}) {
   if (!isDatabaseConfigured()) {
     throw new Error("database is not configured");
   }
@@ -33,12 +40,14 @@ async function dbRequest({ table, method = "GET", query = {}, body, prefer = "re
   const url = `${getSupabaseUrl()}/rest/v1/${table}${params.toString() ? `?${params}` : ""}`;
   const headers = {
     apikey: getSupabaseServiceRoleKey(),
-    Authorization: `Bearer ${getSupabaseServiceRoleKey()}`
+    Authorization: `Bearer ${getSupabaseServiceRoleKey()}`,
+    ...extraHeaders
   };
 
   if (prefer) {
     headers.Prefer = prefer;
   }
+
   if (body !== undefined) {
     headers["Content-Type"] = "application/json";
   }
@@ -61,62 +70,95 @@ async function dbRequest({ table, method = "GET", query = {}, body, prefer = "re
 
   if (!response.ok) {
     const message =
-      data?.message ||
-      data?.details ||
-      data?.hint ||
-      `database request failed (${response.status})`;
-    throw new Error(message);
+      data?.message || data?.details || data?.hint || `database request failed (${response.status})`;
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
 
   return data;
 }
 
-function mapSeedFlowerToRow(flower) {
+function mapSeedLanguageRow(language) {
   return {
-    id: flower.id,
-    name: flower.name,
-    description: flower.description,
-    price: flower.price,
-    occasion: flower.occasion,
-    image: flower.image,
-    image_focus_x: Number.isFinite(Number(flower.imageFocusX)) ? Number(flower.imageFocusX) : 50,
-    image_focus_y: Number.isFinite(Number(flower.imageFocusY)) ? Number(flower.imageFocusY) : 50,
-    stock: flower.stock,
-    created_at: flower.createdAt
+    id: language.id,
+    name: language.name,
+    description: language.description
   };
 }
 
-async function ensureSeedFlowers() {
+function mapSeedCourseRow(course) {
+  return {
+    id: course.id,
+    language_id: course.languageId,
+    title: course.title,
+    level: course.level,
+    duration_weeks: course.durationWeeks,
+    description: course.description,
+    image_url: course.imageUrl
+  };
+}
+
+function mapSeedLessonRow(lesson) {
+  return {
+    id: lesson.id,
+    course_id: lesson.courseId,
+    title: lesson.title,
+    summary: lesson.summary,
+    lesson_order: lesson.lessonOrder,
+    key_phrases: lesson.keyPhrases
+  };
+}
+
+async function ensureSeedAssociationData() {
   if (!isDatabaseConfigured()) {
     return;
   }
 
-  if (globalThis.__FLOWER_DB_SEEDED__) {
+  if (globalThis.__ASSOCIATION_DB_SEEDED__) {
     return;
   }
 
-  const rows = await dbRequest({
-    table: "flowers",
+  const languageRows = await dbRequest({
+    table: "languages",
     method: "GET",
-    query: { select: "id", limit: 1, order: "created_at.desc" },
+    query: { select: "id", limit: 1, order: "id.asc" },
     prefer: null
   });
 
-  if (Array.isArray(rows) && rows.length === 0) {
+  if (Array.isArray(languageRows) && languageRows.length === 0) {
     await dbRequest({
-      table: "flowers",
+      table: "languages",
       method: "POST",
-      body: seedFlowers.map(mapSeedFlowerToRow),
-      prefer: "return=minimal"
+      query: { on_conflict: "id" },
+      body: seedLanguages.map(mapSeedLanguageRow),
+      prefer: "resolution=merge-duplicates,return=minimal"
+    });
+
+    await dbRequest({
+      table: "courses",
+      method: "POST",
+      query: { on_conflict: "id" },
+      body: seedCourses.map(mapSeedCourseRow),
+      prefer: "resolution=merge-duplicates,return=minimal"
+    });
+
+    await dbRequest({
+      table: "lessons",
+      method: "POST",
+      query: { on_conflict: "id" },
+      body: seedLessons.map(mapSeedLessonRow),
+      prefer: "resolution=merge-duplicates,return=minimal"
     });
   }
 
-  globalThis.__FLOWER_DB_SEEDED__ = true;
+  globalThis.__ASSOCIATION_DB_SEEDED__ = true;
 }
 
 module.exports = {
   dbRequest,
-  ensureSeedFlowers,
+  ensureSeedAssociationData,
   isDatabaseConfigured,
   toInFilter
 };
+

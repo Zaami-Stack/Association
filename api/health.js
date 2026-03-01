@@ -7,7 +7,7 @@ module.exports = function handler(req, res) {
 
   return json(res, 200, {
     status: "ok",
-    service: "flower-shop-api",
+    service: "association-language-api",
     timestamp: new Date().toISOString()
   });
 };

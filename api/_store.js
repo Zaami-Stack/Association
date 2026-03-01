@@ -1,59 +1,196 @@
 const { randomUUID } = require("node:crypto");
-const DEFAULT_HERO_IMAGE =
-  "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&q=80";
 
-const seedFlowers = [
+const seedLanguages = [
   {
-    id: "rose-red",
-    name: "Crimson Rose Bouquet",
-    description: "Hand-tied red roses for romantic occasions.",
-    price: 34.99,
-    occasion: "romance",
-    image:
-      "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=1000&q=80",
-    imageFocusX: 50,
-    imageFocusY: 46,
-    stock: 15,
-    createdAt: "2026-01-05T09:00:00.000Z"
+    id: 1,
+    name: "English",
+    description: "Build strong grammar, communication, and pronunciation."
   },
   {
-    id: "sunshine-tulip",
-    name: "Sunshine Tulip Mix",
-    description: "Bright yellow and orange tulips for cheerful gifting.",
-    price: 24.5,
-    occasion: "birthday",
-    image:
-      "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1000&q=80",
-    imageFocusX: 50,
-    imageFocusY: 46,
-    stock: 20,
-    createdAt: "2026-01-09T12:30:00.000Z"
+    id: 2,
+    name: "Spanish",
+    description: "Learn practical Spanish for travel, work, and daily life."
   },
   {
-    id: "pure-lily",
-    name: "Pure White Lily Vase",
-    description: "Elegant lilies arranged in a clear glass vase.",
-    price: 41,
-    occasion: "wedding",
-    image:
-      "https://images.unsplash.com/photo-1468327768560-75b778cbb551?auto=format&fit=crop&w=1000&q=80",
-    imageFocusX: 50,
-    imageFocusY: 46,
-    stock: 8,
-    createdAt: "2026-01-12T08:45:00.000Z"
+    id: 3,
+    name: "French",
+    description: "Master foundational French with modern speaking practice."
+  }
+];
+
+const seedCourses = [
+  {
+    id: 1,
+    languageId: 1,
+    title: "English Foundations",
+    level: "Beginner",
+    durationWeeks: 8,
+    description: "Start from zero and build confidence in speaking and writing English.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=80"
   },
   {
-    id: "pastel-peony",
-    name: "Pastel Peony Bundle",
-    description: "Soft peonies with seasonal fillers.",
-    price: 29.75,
-    occasion: "thank-you",
-    image:
-      "https://images.unsplash.com/photo-1520763185298-1b434c919102?auto=format&fit=crop&w=1000&q=80",
-    imageFocusX: 50,
-    imageFocusY: 46,
-    stock: 12,
-    createdAt: "2026-01-15T10:00:00.000Z"
+    id: 2,
+    languageId: 1,
+    title: "Business English Communication",
+    level: "Intermediate",
+    durationWeeks: 10,
+    description: "Professional English for meetings, emails, and workplace presentations.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    id: 3,
+    languageId: 2,
+    title: "Spanish for Daily Life",
+    level: "Beginner",
+    durationWeeks: 8,
+    description: "Essential Spanish vocabulary and grammar for real conversations.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1526129318478-62ed807ebdf9?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    id: 4,
+    languageId: 2,
+    title: "Spanish Conversation Club",
+    level: "Intermediate",
+    durationWeeks: 6,
+    description: "Conversation-focused practice to improve fluency and listening speed.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1533750516457-a7f992034fec?auto=format&fit=crop&w=1200&q=80"
+  },
+  {
+    id: 5,
+    languageId: 3,
+    title: "French Essentials",
+    level: "Beginner",
+    durationWeeks: 8,
+    description: "A complete beginner path for reading, speaking, and understanding French.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1431274172761-fca41d930114?auto=format&fit=crop&w=1200&q=80"
+  }
+];
+
+const seedLessons = [
+  {
+    id: 1,
+    courseId: 1,
+    title: "Greetings and Introductions",
+    summary: "Learn greetings, self-introductions, and polite classroom English.",
+    lessonOrder: 1,
+    keyPhrases: ["Hello, my name is...", "Nice to meet you", "How are you?"]
+  },
+  {
+    id: 2,
+    courseId: 1,
+    title: "Daily Activities",
+    summary: "Describe routines using present simple verbs and time expressions.",
+    lessonOrder: 2,
+    keyPhrases: ["I wake up at...", "I usually...", "In the morning"]
+  },
+  {
+    id: 3,
+    courseId: 1,
+    title: "Basic Questions",
+    summary: "Ask and answer common questions in real-life situations.",
+    lessonOrder: 3,
+    keyPhrases: ["Where do you live?", "What do you do?", "Can you help me?"]
+  },
+  {
+    id: 4,
+    courseId: 2,
+    title: "Professional Introductions",
+    summary: "Introduce yourself in a business meeting with confidence.",
+    lessonOrder: 1,
+    keyPhrases: ["I work as...", "My responsibilities include...", "Our team focuses on..."]
+  },
+  {
+    id: 5,
+    courseId: 2,
+    title: "Business Emails",
+    summary: "Write clear and polite email messages for clients and teammates.",
+    lessonOrder: 2,
+    keyPhrases: ["I hope you are doing well", "Please find attached", "Looking forward to..."]
+  },
+  {
+    id: 6,
+    courseId: 2,
+    title: "Presenting Ideas",
+    summary: "Structure business presentations and speak with clear transitions.",
+    lessonOrder: 3,
+    keyPhrases: ["First, I will cover...", "As you can see", "To summarize"]
+  },
+  {
+    id: 7,
+    courseId: 3,
+    title: "Saludos Basicos",
+    summary: "Use common Spanish greetings and polite expressions.",
+    lessonOrder: 1,
+    keyPhrases: ["Hola, me llamo...", "Mucho gusto", "Como estas?"]
+  },
+  {
+    id: 8,
+    courseId: 3,
+    title: "Compras y Comida",
+    summary: "Order food, ask prices, and shop with useful vocabulary.",
+    lessonOrder: 2,
+    keyPhrases: ["Cuanto cuesta?", "Quiero...", "La cuenta, por favor"]
+  },
+  {
+    id: 9,
+    courseId: 3,
+    title: "Moverse en la Ciudad",
+    summary: "Ask for directions and use transport vocabulary confidently.",
+    lessonOrder: 3,
+    keyPhrases: ["Donde esta...?", "A la derecha", "Necesito un taxi"]
+  },
+  {
+    id: 10,
+    courseId: 4,
+    title: "Hablar de Opiniones",
+    summary: "Express personal opinions and agree/disagree politely.",
+    lessonOrder: 1,
+    keyPhrases: ["Pienso que...", "Estoy de acuerdo", "No estoy seguro"]
+  },
+  {
+    id: 11,
+    courseId: 4,
+    title: "Historias y Experiencias",
+    summary: "Practice conversational past tense in group activities.",
+    lessonOrder: 2,
+    keyPhrases: ["La semana pasada...", "Cuando era nino/a...", "Fue increible"]
+  },
+  {
+    id: 12,
+    courseId: 4,
+    title: "Debates Guiados",
+    summary: "Build fluency through role-play and mini debate sessions.",
+    lessonOrder: 3,
+    keyPhrases: ["En mi opinion...", "Por otro lado", "En conclusion"]
+  },
+  {
+    id: 13,
+    courseId: 5,
+    title: "Bonjour et Presentation",
+    summary: "Learn French greetings, pronunciation basics, and introductions.",
+    lessonOrder: 1,
+    keyPhrases: ["Bonjour", "Je m'appelle...", "Comment ca va?"]
+  },
+  {
+    id: 14,
+    courseId: 5,
+    title: "Vie Quotidienne",
+    summary: "Discuss simple routines with useful verbs and time words.",
+    lessonOrder: 2,
+    keyPhrases: ["Je me leve", "Je travaille", "Le soir"]
+  },
+  {
+    id: 15,
+    courseId: 5,
+    title: "Questions Utiles",
+    summary: "Ask practical questions for travel and social situations.",
+    lessonOrder: 3,
+    keyPhrases: ["Ou est...?", "Pouvez-vous m'aider?", "Combien ca coute?"]
   }
 ];
 
@@ -62,19 +199,18 @@ function clone(value) {
 }
 
 function getStore() {
-  if (!globalThis.__FLOWER_STORE__) {
-    globalThis.__FLOWER_STORE__ = {
-      flowers: clone(seedFlowers),
-      orders: [],
-      users: [],
-      notifications: [],
-      settings: {
-        heroImage: DEFAULT_HERO_IMAGE,
-        updatedAt: new Date().toISOString()
-      }
+  if (!globalThis.__ASSOCIATION_STORE__) {
+    globalThis.__ASSOCIATION_STORE__ = {
+      languages: clone(seedLanguages),
+      courses: clone(seedCourses),
+      lessons: clone(seedLessons),
+      students: [],
+      enrollments: [],
+      lessonProgress: []
     };
   }
-  return globalThis.__FLOWER_STORE__;
+
+  return globalThis.__ASSOCIATION_STORE__;
 }
 
 function createId(size = 12) {
@@ -82,8 +218,10 @@ function createId(size = 12) {
 }
 
 module.exports = {
-  DEFAULT_HERO_IMAGE,
-  seedFlowers,
+  seedLanguages,
+  seedCourses,
+  seedLessons,
   getStore,
   createId
 };
+
