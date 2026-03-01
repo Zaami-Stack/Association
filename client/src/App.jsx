@@ -519,7 +519,7 @@ function App() {
         <div className="container stats-grid">
           <article className="stat-card">
             <strong>{stats.languages}</strong>
-            <span>Languages</span>
+            <span>Programmes</span>
           </article>
           <article className="stat-card">
             <strong>{stats.courses}</strong>
@@ -539,8 +539,11 @@ function App() {
       <section id="courses" className="courses">
         <div className="container">
           <div className="section-head">
-            <h2>Language Courses</h2>
-            <p>Choose a language track and enroll instantly.</p>
+            <h2>Programmes Maison du Savoir</h2>
+            <p>
+              Accompagnement CNED primaire et college, petits groupes, et activites
+              complementaires.
+            </p>
           </div>
 
           <div className="filters">
@@ -548,7 +551,7 @@ function App() {
               value={selectedLanguage}
               onChange={(event) => setSelectedLanguage(event.target.value)}
             >
-              <option value="all">All languages</option>
+              <option value="all">Tous les programmes</option>
               {languages.map((language) => (
                 <option key={language.id} value={language.id}>
                   {language.name}
@@ -557,7 +560,7 @@ function App() {
             </select>
             <input
               type="search"
-              placeholder="Search by course name..."
+              placeholder="Rechercher un programme..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
