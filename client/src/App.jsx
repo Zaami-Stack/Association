@@ -1143,7 +1143,6 @@ function App() {
         }}
       >
         <div className="container hero-content">
-          <p className="hero-tag">{copy.hero.tag}</p>
           <h1>
             {copy.hero.titleMain}
             {copy.hero.titleAccent ? <span>{copy.hero.titleAccent}</span> : null}
