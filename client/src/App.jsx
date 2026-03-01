@@ -1178,7 +1178,7 @@ function App() {
             <h4>{copy.about.placeTitle}</h4>
             <p>{copy.about.placeText}</p>
             <p className="about-phone">
-              <a href="tel:+212724191970">0724 191 970</a>
+              <a href="tel:+212681222459">0681222459</a>
             </p>
             <p className="about-end">{copy.about.ending}</p>
           </article>
