@@ -43,7 +43,7 @@ function getCourses(filters = {}) {
 }
 
 function getCourseDetails(courseId) {
-  return request(`/courses/${courseId}`);
+  return request(`/courses?courseId=${encodeURIComponent(String(courseId))}`);
 }
 
 function getGalleryPhotos() {
@@ -58,14 +58,14 @@ function createGalleryPhoto(payload) {
 }
 
 function updateGalleryPhoto(photoId, payload) {
-  return request(`/gallery/${photoId}`, {
+  return request(`/gallery?id=${encodeURIComponent(String(photoId))}`, {
     method: "PATCH",
     body: JSON.stringify(payload)
   });
 }
 
 function deleteGalleryPhoto(photoId) {
-  return request(`/gallery/${photoId}`, {
+  return request(`/gallery?id=${encodeURIComponent(String(photoId))}`, {
     method: "DELETE"
   });
 }
@@ -82,7 +82,7 @@ function createNotification(payload) {
 }
 
 function deleteNotification(notificationId) {
-  return request(`/notifications/${notificationId}`, {
+  return request(`/notifications?id=${encodeURIComponent(String(notificationId))}`, {
     method: "DELETE"
   });
 }
@@ -92,25 +92,25 @@ function getAdminStudents() {
 }
 
 function getSession() {
-  return request("/auth/me");
+  return request("/auth");
 }
 
 function login(payload) {
-  return request("/auth/login", {
+  return request("/auth?action=login", {
     method: "POST",
     body: JSON.stringify(payload)
   });
 }
 
 function signup(payload) {
-  return request("/auth/signup", {
+  return request("/auth?action=signup", {
     method: "POST",
     body: JSON.stringify(payload)
   });
 }
 
 function logout() {
-  return request("/auth/logout", {
+  return request("/auth?action=logout", {
     method: "POST",
     body: JSON.stringify({})
   });
@@ -129,11 +129,11 @@ function getStudentEnrollments(email) {
 }
 
 function getEnrollmentProgress(enrollmentId) {
-  return request(`/enrollments/${enrollmentId}/progress`);
+  return request(`/enrollments?enrollmentId=${encodeURIComponent(String(enrollmentId))}`);
 }
 
 function updateLessonProgress(enrollmentId, lessonId, completed) {
-  return request(`/enrollments/${enrollmentId}/progress`, {
+  return request(`/enrollments?enrollmentId=${encodeURIComponent(String(enrollmentId))}`, {
     method: "PATCH",
     body: JSON.stringify({ lessonId, completed })
   });

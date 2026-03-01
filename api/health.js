@@ -1,4 +1,4 @@
-const { json, methodNotAllowed } = require("./_utils");
+const { json, methodNotAllowed } = require("../lib/utils");
 
 module.exports = function handler(req, res) {
   if (req.method !== "GET") {

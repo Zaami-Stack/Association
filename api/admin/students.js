@@ -1,6 +1,6 @@
-const { requireRole } = require("../_auth");
-const { listStudentsOverview } = require("../_dashboard");
-const { json, methodNotAllowed } = require("../_utils");
+const { requireRole } = require("../../lib/auth");
+const { listStudentsOverview } = require("../../lib/dashboard");
+const { json, methodNotAllowed } = require("../../lib/utils");
 
 module.exports = async function handler(req, res) {
   try {
@@ -21,4 +21,3 @@ module.exports = async function handler(req, res) {
     });
   }
 };
-

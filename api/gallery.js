@@ -1,6 +1,11 @@
-const { requireRole } = require("./_auth");
-const { createGalleryPhoto, listGalleryPhotos } = require("./_dashboard");
-const { json, methodNotAllowed, readJsonBody } = require("./_utils");
+const { requireRole } = require("../lib/auth");
+const {
+  createGalleryPhoto,
+  deleteGalleryPhoto,
+  listGalleryPhotos,
+  updateGalleryPhoto
+} = require("../lib/dashboard");
+const { json, methodNotAllowed, parseUrl, readJsonBody } = require("../lib/utils");
 
 module.exports = async function handler(req, res) {
   try {
@@ -26,11 +31,49 @@ module.exports = async function handler(req, res) {
       return json(res, 201, photo);
     }
 
-    return methodNotAllowed(res, ["GET", "POST"]);
+    if (req.method === "PATCH") {
+      const user = requireRole(req, res, ["admin"]);
+      if (!user) {
+        return;
+      }
+
+      const url = parseUrl(req);
+      const photoId = String(url.searchParams.get("id") || "").trim();
+      if (!photoId) {
+        return json(res, 400, { message: "id query param is required" });
+      }
+
+      let body;
+      try {
+        body = await readJsonBody(req);
+      } catch {
+        return json(res, 400, { message: "invalid JSON body" });
+      }
+
+      const photo = await updateGalleryPhoto(photoId, body);
+      return json(res, 200, photo);
+    }
+
+    if (req.method === "DELETE") {
+      const user = requireRole(req, res, ["admin"]);
+      if (!user) {
+        return;
+      }
+
+      const url = parseUrl(req);
+      const photoId = String(url.searchParams.get("id") || "").trim();
+      if (!photoId) {
+        return json(res, 400, { message: "id query param is required" });
+      }
+
+      const removed = await deleteGalleryPhoto(photoId);
+      return json(res, 200, { ok: true, removed });
+    }
+
+    return methodNotAllowed(res, ["GET", "POST", "PATCH", "DELETE"]);
   } catch (error) {
     return json(res, Number(error.status || 500), {
       message: error.message || "internal server error"
     });
   }
 };
-

@@ -50,23 +50,23 @@ The serverless backend routes are:
 - `GET /api/stats`
 - `GET /api/languages`
 - `GET /api/courses?languageId=&search=`
-- `GET /api/courses/:courseId`
+- `GET /api/courses?courseId=`
 - `GET /api/gallery`
 - `POST /api/gallery` (admin)
-- `PATCH /api/gallery/:photoId` (admin)
-- `DELETE /api/gallery/:photoId` (admin)
+- `PATCH /api/gallery?id=` (admin)
+- `DELETE /api/gallery?id=` (admin)
 - `GET /api/notifications`
 - `POST /api/notifications` (admin)
-- `DELETE /api/notifications/:notificationId` (admin)
+- `DELETE /api/notifications?id=` (admin)
 - `GET /api/enrollments?email=`
 - `POST /api/enrollments`
-- `GET /api/enrollments/:enrollmentId/progress`
-- `PATCH /api/enrollments/:enrollmentId/progress`
+- `GET /api/enrollments?enrollmentId=`
+- `PATCH /api/enrollments?enrollmentId=`
 - `GET /api/admin/students` (admin)
-- `POST /api/auth/login`
-- `POST /api/auth/signup` (student account)
-- `POST /api/auth/logout`
-- `GET /api/auth/me`
+- `GET /api/auth`
+- `POST /api/auth?action=login`
+- `POST /api/auth?action=signup` (student account)
+- `POST /api/auth?action=logout`
 
 Seed data for languages/courses/lessons is inserted automatically on first request when Supabase is empty.
 

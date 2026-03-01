@@ -1,6 +1,6 @@
-const { requireRole } = require("./_auth");
-const { createNotification, listNotifications } = require("./_dashboard");
-const { json, methodNotAllowed, parseUrl, readJsonBody } = require("./_utils");
+const { requireRole } = require("../lib/auth");
+const { createNotification, deleteNotification, listNotifications } = require("../lib/dashboard");
+const { json, methodNotAllowed, parseUrl, readJsonBody } = require("../lib/utils");
 
 module.exports = async function handler(req, res) {
   try {
@@ -28,11 +28,26 @@ module.exports = async function handler(req, res) {
       return json(res, 201, created);
     }
 
-    return methodNotAllowed(res, ["GET", "POST"]);
+    if (req.method === "DELETE") {
+      const user = requireRole(req, res, ["admin"]);
+      if (!user) {
+        return;
+      }
+
+      const url = parseUrl(req);
+      const notificationId = String(url.searchParams.get("id") || "").trim();
+      if (!notificationId) {
+        return json(res, 400, { message: "id query param is required" });
+      }
+
+      const removed = await deleteNotification(notificationId);
+      return json(res, 200, { ok: true, removed });
+    }
+
+    return methodNotAllowed(res, ["GET", "POST", "DELETE"]);
   } catch (error) {
     return json(res, Number(error.status || 500), {
       message: error.message || "internal server error"
     });
   }
 };
-

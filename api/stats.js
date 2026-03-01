@@ -1,5 +1,5 @@
-const { getStats } = require("./_association");
-const { json, methodNotAllowed } = require("./_utils");
+const { getStats } = require("../lib/association");
+const { json, methodNotAllowed } = require("../lib/utils");
 
 module.exports = async function handler(req, res) {
   try {
@@ -15,4 +15,3 @@ module.exports = async function handler(req, res) {
     });
   }
 };
-
