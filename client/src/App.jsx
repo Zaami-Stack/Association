@@ -47,16 +47,468 @@ const initialNotificationForm = {
   message: ""
 };
 
-function formatDate(value) {
+const SUPPORTED_UI_LANGS = ["en", "fr", "es"];
+
+const UI_COPY = {
+  en: {
+    language: "Language",
+    nav: {
+      home: "Home",
+      about: "About",
+      courses: "Courses",
+      gallery: "Gallery",
+      enroll: "Enroll",
+      dashboard: "Dashboard",
+      toggleMenu: "Toggle navigation menu"
+    },
+    auth: {
+      loading: "Loading...",
+      login: "Login",
+      signUp: "Sign Up",
+      logout: "Logout",
+      loginTitle: "Login",
+      loginSubtitle: "Use your account credentials.",
+      signInLoading: "Signing in...",
+      signUpTitle: "Sign Up",
+      signUpSubtitle: "Create a student account.",
+      signUpLoading: "Creating...",
+      needAccount: "Need an account? Sign up",
+      haveAccount: "Already have an account? Login",
+      password: "Password",
+      passwordMin: "Password (min 8 chars)",
+      loginFailed: "Login failed.",
+      signupFailed: "Signup failed."
+    },
+    notifications: {
+      title: "Notifications",
+      empty: "No notifications."
+    },
+    hero: {
+      tag: "Global communication starts here",
+      titleMain: "Learn Spanish, English, and more",
+      titleAccent: " at Maison de Savoir",
+      desc: "Explore structured courses, enroll students, and follow learning progress step by step.",
+      cta: "Start Learning"
+    },
+    about: {
+      city: "GHAZOUA",
+      subtitle: "La maison du savoir",
+      title: "CNED Support - Primary & Middle School",
+      quote: '"We plant seeds for the future"',
+      lead: "A caring space to learn differently",
+      paragraph:
+        "La Maison du Savoir supports primary and middle school students enrolled in CNED, in a calm, motivating, and personalized environment.",
+      includesTitle: "Our support includes:",
+      includes: [
+        "Daytime welcome from Monday to Friday",
+        "Guidance from a caring educational team",
+        "Individual follow-up of CNED lessons",
+        "Small groups for effective learning",
+        "Complementary activities: creative workshops, educational games, oral expression"
+      ],
+      placeTitle: "A warm and inspiring place",
+      placeText:
+        "Located in Ghazoua (Km8, Sidi Kaouki road), La Maison du Savoir is a calm and bright space, ideal for focus and growth.",
+      ending: "A place open to the world, nature, and knowledge."
+    },
+    stats: {
+      programs: "Programs",
+      courses: "Courses",
+      lessons: "Lessons",
+      students: "Students"
+    },
+    catalog: {
+      heading: "Maison du Savoir Programs",
+      subtitle:
+        "CNED support for primary and middle school students, small groups, and complementary activities.",
+      allPrograms: "All programs",
+      searchPlaceholder: "Search a program...",
+      loading: "Loading courses...",
+      empty: "No courses match your current filter.",
+      enrollBtn: "Enroll in this course",
+      weeks: "weeks",
+      lessons: "lessons"
+    },
+    gallery: {
+      heading: "Learning Gallery",
+      subtitle: "Snapshots from sessions, workshops, and student activities."
+    },
+    enroll: {
+      heading: "Enroll a Student",
+      subtitle: "Use this form to register a student with full name, email, and phone number.",
+      fullName: "Full name",
+      email: "Email",
+      phone: "Phone number",
+      saving: "Saving...",
+      submit: "Create Enrollment",
+      saved: (studentName, courseTitle) =>
+        `Enrollment saved for ${studentName} in "${courseTitle}".`,
+      failed: "Enrollment failed."
+    },
+    dashboard: {
+      heading: "Admin Dashboard",
+      subtitle: "Only admin can access this section.",
+      manageGallery: "Manage Gallery",
+      photoTitle: "Photo title",
+      imageUrl: "Image URL",
+      position: "Position",
+      updatePhoto: "Update Photo",
+      addPhoto: "Add Photo",
+      cancel: "Cancel",
+      edit: "Edit",
+      delete: "Delete",
+      manageNotifications: "Manage Notifications",
+      notificationTitle: "Notification title",
+      notificationMessage: "Notification message",
+      publish: "Publish Notification",
+      publishing: "Publishing...",
+      contacts: "Student Contacts",
+      refresh: "Refresh",
+      loadingStudents: "Loading students...",
+      noStudents: "No students found yet.",
+      noPhone: "No phone provided",
+      galleryUpdated: "Gallery photo updated.",
+      galleryCreated: "Gallery photo created.",
+      galleryRemoved: "Gallery photo removed.",
+      gallerySaveError: "Could not save gallery photo.",
+      galleryDeleteError: "Could not remove gallery photo.",
+      notificationPublished: "Notification published.",
+      notificationRemoved: "Notification removed.",
+      notificationPublishError: "Could not publish notification.",
+      notificationDeleteError: "Could not remove notification."
+    },
+    common: {
+      update: "Update",
+      create: "Create"
+    },
+    errors: {
+      loadData: "Unable to load data.",
+      loadStudents: "Failed to load students."
+    }
+  },
+  fr: {
+    language: "Langue",
+    nav: {
+      home: "Accueil",
+      about: "A propos",
+      courses: "Programmes",
+      gallery: "Galerie",
+      enroll: "Inscription",
+      dashboard: "Tableau de bord",
+      toggleMenu: "Ouvrir le menu"
+    },
+    auth: {
+      loading: "Chargement...",
+      login: "Connexion",
+      signUp: "Inscription",
+      logout: "Deconnexion",
+      loginTitle: "Connexion",
+      loginSubtitle: "Utilisez vos identifiants.",
+      signInLoading: "Connexion...",
+      signUpTitle: "Inscription",
+      signUpSubtitle: "Creer un compte etudiant.",
+      signUpLoading: "Creation...",
+      needAccount: "Pas de compte ? Inscrivez-vous",
+      haveAccount: "Vous avez deja un compte ? Connexion",
+      password: "Mot de passe",
+      passwordMin: "Mot de passe (min 8 caracteres)",
+      loginFailed: "Echec de connexion.",
+      signupFailed: "Echec d'inscription."
+    },
+    notifications: {
+      title: "Notifications",
+      empty: "Aucune notification."
+    },
+    hero: {
+      tag: "La communication globale commence ici",
+      titleMain: "Apprenez l'espagnol, l'anglais et plus encore",
+      titleAccent: " a Maison de Savoir",
+      desc: "Explorez des programmes structures, inscrivez les eleves, et suivez leur progression etape par etape.",
+      cta: "Commencer"
+    },
+    about: {
+      city: "GHAZOUA",
+      subtitle: "La maison du savoir",
+      title: "Accompagnement CNED - Primaire & College",
+      quote: '"Nous plantons des graines pour le futur"',
+      lead: "Un cadre bienveillant pour apprendre autrement",
+      paragraph:
+        "La Maison du Savoir accompagne les eleves du primaire et du college inscrits au CNED, dans un environnement serein, stimulant et personnalise.",
+      includesTitle: "Notre accompagnement comprend :",
+      includes: [
+        "Accueil en journee, du lundi au vendredi",
+        "Encadrement par une equipe pedagogique bienveillante",
+        "Suivi individualise des cours CNED",
+        "Petits groupes pour un apprentissage efficace",
+        "Activites complementaires : ateliers creatifs, jeux educatifs, expression orale"
+      ],
+      placeTitle: "Un lieu chaleureux et inspirant",
+      placeText:
+        "Situee a Ghazoua (Km8, route de Sidi Kaouki), La Maison du Savoir est un espace calme et lumineux, propice a la concentration et a l'epanouissement.",
+      ending: "Un lieu ouvert sur le monde, la nature et les savoirs."
+    },
+    stats: {
+      programs: "Programmes",
+      courses: "Cours",
+      lessons: "Lecons",
+      students: "Eleves"
+    },
+    catalog: {
+      heading: "Programmes Maison du Savoir",
+      subtitle:
+        "Accompagnement CNED primaire et college, petits groupes, et activites complementaires.",
+      allPrograms: "Tous les programmes",
+      searchPlaceholder: "Rechercher un programme...",
+      loading: "Chargement des cours...",
+      empty: "Aucun programme ne correspond au filtre.",
+      enrollBtn: "Inscrire a ce cours",
+      weeks: "semaines",
+      lessons: "lecons"
+    },
+    gallery: {
+      heading: "Galerie d'apprentissage",
+      subtitle: "Moments des cours, ateliers et activites des eleves."
+    },
+    enroll: {
+      heading: "Inscrire un eleve",
+      subtitle: "Utilisez ce formulaire avec nom complet, email et numero de telephone.",
+      fullName: "Nom complet",
+      email: "Email",
+      phone: "Numero de telephone",
+      saving: "Enregistrement...",
+      submit: "Creer l'inscription",
+      saved: (studentName, courseTitle) =>
+        `Inscription enregistree pour ${studentName} dans "${courseTitle}".`,
+      failed: "Echec de l'inscription."
+    },
+    dashboard: {
+      heading: "Tableau de bord Admin",
+      subtitle: "Seul l'admin peut acceder a cette section.",
+      manageGallery: "Gerer la galerie",
+      photoTitle: "Titre de la photo",
+      imageUrl: "URL de l'image",
+      position: "Position",
+      updatePhoto: "Mettre a jour",
+      addPhoto: "Ajouter la photo",
+      cancel: "Annuler",
+      edit: "Modifier",
+      delete: "Supprimer",
+      manageNotifications: "Gerer les notifications",
+      notificationTitle: "Titre de la notification",
+      notificationMessage: "Message de la notification",
+      publish: "Publier la notification",
+      publishing: "Publication...",
+      contacts: "Contacts eleves",
+      refresh: "Actualiser",
+      loadingStudents: "Chargement des eleves...",
+      noStudents: "Aucun eleve trouve.",
+      noPhone: "Aucun telephone",
+      galleryUpdated: "Photo de galerie mise a jour.",
+      galleryCreated: "Photo de galerie creee.",
+      galleryRemoved: "Photo de galerie supprimee.",
+      gallerySaveError: "Impossible d'enregistrer la photo.",
+      galleryDeleteError: "Impossible de supprimer la photo.",
+      notificationPublished: "Notification publiee.",
+      notificationRemoved: "Notification supprimee.",
+      notificationPublishError: "Impossible de publier la notification.",
+      notificationDeleteError: "Impossible de supprimer la notification."
+    },
+    common: {
+      update: "Mettre a jour",
+      create: "Creer"
+    },
+    errors: {
+      loadData: "Impossible de charger les donnees.",
+      loadStudents: "Impossible de charger les eleves."
+    }
+  },
+  es: {
+    language: "Idioma",
+    nav: {
+      home: "Inicio",
+      about: "Acerca",
+      courses: "Programas",
+      gallery: "Galeria",
+      enroll: "Inscripcion",
+      dashboard: "Panel",
+      toggleMenu: "Abrir menu"
+    },
+    auth: {
+      loading: "Cargando...",
+      login: "Iniciar sesion",
+      signUp: "Registrarse",
+      logout: "Cerrar sesion",
+      loginTitle: "Iniciar sesion",
+      loginSubtitle: "Usa tus credenciales.",
+      signInLoading: "Entrando...",
+      signUpTitle: "Registrarse",
+      signUpSubtitle: "Crear cuenta de estudiante.",
+      signUpLoading: "Creando...",
+      needAccount: "No tienes cuenta? Registrate",
+      haveAccount: "Ya tienes cuenta? Inicia sesion",
+      password: "Contrasena",
+      passwordMin: "Contrasena (min 8 caracteres)",
+      loginFailed: "Error al iniciar sesion.",
+      signupFailed: "Error al registrarse."
+    },
+    notifications: {
+      title: "Notificaciones",
+      empty: "Sin notificaciones."
+    },
+    hero: {
+      tag: "La comunicacion global comienza aqui",
+      titleMain: "Aprende espanol, ingles y mas",
+      titleAccent: " en Maison de Savoir",
+      desc: "Explora programas estructurados, inscribe alumnos y sigue su progreso paso a paso.",
+      cta: "Empezar"
+    },
+    about: {
+      city: "GHAZOUA",
+      subtitle: "La maison du savoir",
+      title: "Acompanamiento CNED - Primaria y Colegio",
+      quote: '"Sembramos semillas para el futuro"',
+      lead: "Un espacio cercano para aprender de otra manera",
+      paragraph:
+        "La Maison du Savoir acompana a alumnos de primaria y colegio inscritos en CNED, en un entorno sereno, estimulante y personalizado.",
+      includesTitle: "Nuestro acompanamiento incluye:",
+      includes: [
+        "Acogida durante el dia, de lunes a viernes",
+        "Equipo pedagogico cercano y atento",
+        "Seguimiento individual de cursos CNED",
+        "Grupos pequenos para un aprendizaje eficaz",
+        "Actividades complementarias: talleres creativos, juegos educativos, expresion oral"
+      ],
+      placeTitle: "Un lugar calido e inspirador",
+      placeText:
+        "Ubicada en Ghazoua (Km8, ruta de Sidi Kaouki), La Maison du Savoir es un espacio tranquilo y luminoso, ideal para la concentracion y el crecimiento.",
+      ending: "Un lugar abierto al mundo, la naturaleza y el conocimiento."
+    },
+    stats: {
+      programs: "Programas",
+      courses: "Cursos",
+      lessons: "Lecciones",
+      students: "Alumnos"
+    },
+    catalog: {
+      heading: "Programas Maison du Savoir",
+      subtitle:
+        "Acompanamiento CNED para primaria y colegio, grupos pequenos y actividades complementarias.",
+      allPrograms: "Todos los programas",
+      searchPlaceholder: "Buscar un programa...",
+      loading: "Cargando cursos...",
+      empty: "No hay programas para este filtro.",
+      enrollBtn: "Inscribir en este curso",
+      weeks: "semanas",
+      lessons: "lecciones"
+    },
+    gallery: {
+      heading: "Galeria de aprendizaje",
+      subtitle: "Momentos de clases, talleres y actividades de estudiantes."
+    },
+    enroll: {
+      heading: "Inscribir estudiante",
+      subtitle: "Usa este formulario con nombre completo, email y telefono.",
+      fullName: "Nombre completo",
+      email: "Email",
+      phone: "Telefono",
+      saving: "Guardando...",
+      submit: "Crear inscripcion",
+      saved: (studentName, courseTitle) =>
+        `Inscripcion guardada para ${studentName} en "${courseTitle}".`,
+      failed: "La inscripcion fallo."
+    },
+    dashboard: {
+      heading: "Panel de Admin",
+      subtitle: "Solo el admin puede acceder a esta seccion.",
+      manageGallery: "Gestionar galeria",
+      photoTitle: "Titulo de foto",
+      imageUrl: "URL de imagen",
+      position: "Posicion",
+      updatePhoto: "Actualizar foto",
+      addPhoto: "Agregar foto",
+      cancel: "Cancelar",
+      edit: "Editar",
+      delete: "Eliminar",
+      manageNotifications: "Gestionar notificaciones",
+      notificationTitle: "Titulo de notificacion",
+      notificationMessage: "Mensaje de notificacion",
+      publish: "Publicar notificacion",
+      publishing: "Publicando...",
+      contacts: "Contactos de estudiantes",
+      refresh: "Actualizar",
+      loadingStudents: "Cargando estudiantes...",
+      noStudents: "Aun no hay estudiantes.",
+      noPhone: "Sin telefono",
+      galleryUpdated: "Foto de galeria actualizada.",
+      galleryCreated: "Foto de galeria creada.",
+      galleryRemoved: "Foto de galeria eliminada.",
+      gallerySaveError: "No se pudo guardar la foto.",
+      galleryDeleteError: "No se pudo eliminar la foto.",
+      notificationPublished: "Notificacion publicada.",
+      notificationRemoved: "Notificacion eliminada.",
+      notificationPublishError: "No se pudo publicar la notificacion.",
+      notificationDeleteError: "No se pudo eliminar la notificacion."
+    },
+    common: {
+      update: "Actualizar",
+      create: "Crear"
+    },
+    errors: {
+      loadData: "No se pudieron cargar los datos.",
+      loadStudents: "No se pudieron cargar los estudiantes."
+    }
+  }
+};
+
+function getInitialUiLanguage() {
+  if (typeof window === "undefined") {
+    return "en";
+  }
+
+  const saved = window.localStorage.getItem("ui_language");
+  return SUPPORTED_UI_LANGS.includes(saved) ? saved : "en";
+}
+
+function getDateLocale(uiLanguage) {
+  if (uiLanguage === "fr") {
+    return "fr-FR";
+  }
+  if (uiLanguage === "es") {
+    return "es-ES";
+  }
+  return "en-US";
+}
+
+function formatDate(value, locale) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
     return "";
   }
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "numeric",
     year: "numeric"
   }).format(date);
+}
+
+function translateCourseLevel(level, uiLanguage) {
+  const normalized = String(level || "").toLowerCase();
+
+  if (uiLanguage === "fr") {
+    if (normalized === "beginner") return "Debutant";
+    if (normalized === "intermediate") return "Intermediaire";
+    if (normalized === "advanced") return "Avance";
+    return String(level || "");
+  }
+
+  if (uiLanguage === "es") {
+    if (normalized === "beginner") return "Inicial";
+    if (normalized === "intermediate") return "Intermedio";
+    if (normalized === "advanced") return "Avanzado";
+    return String(level || "");
+  }
+
+  return String(level || "");
 }
 
 function App() {
@@ -70,6 +522,7 @@ function App() {
   const [courses, setCourses] = useState([]);
   const [galleryPhotos, setGalleryPhotos] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [uiLanguage, setUiLanguage] = useState(getInitialUiLanguage);
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const [search, setSearch] = useState("");
   const [loadingCatalog, setLoadingCatalog] = useState(true);
@@ -101,6 +554,8 @@ function App() {
   const [notificationSubmitting, setNotificationSubmitting] = useState(false);
   const [dashboardMessage, setDashboardMessage] = useState("");
 
+  const copy = useMemo(() => UI_COPY[uiLanguage] || UI_COPY.en, [uiLanguage]);
+  const dateLocale = useMemo(() => getDateLocale(uiLanguage), [uiLanguage]);
   const isAdmin = user?.role === "admin";
 
   const filteredCourses = useMemo(() => {
@@ -126,6 +581,12 @@ function App() {
       setEnrollForm((previous) => ({ ...previous, courseId: String(courses[0].id) }));
     }
   }, [courses, enrollForm.courseId]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("ui_language", uiLanguage);
+    }
+  }, [uiLanguage]);
 
   useEffect(() => {
     function closeOnEscape(event) {
@@ -197,7 +658,7 @@ function App() {
       setGalleryPhotos(Array.isArray(galleryData) ? galleryData : []);
       setNotifications(Array.isArray(notificationsData) ? notificationsData : []);
     } catch (error) {
-      setCatalogError(error.message || "Unable to load data.");
+      setCatalogError(error.message || copy.errors.loadData);
     } finally {
       setLoadingCatalog(false);
     }
@@ -211,7 +672,7 @@ function App() {
       setAdminStudents(Array.isArray(students) ? students : []);
     } catch (error) {
       setAdminStudents([]);
-      setAdminError(error.message || "Failed to load students.");
+      setAdminError(error.message || copy.errors.loadStudents);
     } finally {
       setAdminLoading(false);
     }
@@ -230,13 +691,11 @@ function App() {
         courseId: Number(enrollForm.courseId)
       };
       const response = await enrollStudent(payload);
-      setEnrollMessage(
-        `Enrollment saved for ${response.student.fullName} in "${response.course.title}".`
-      );
+      setEnrollMessage(copy.enroll.saved(response.student.fullName, response.course.title));
       setEnrollForm((previous) => ({ ...previous, fullName: "", email: "", phone: "" }));
       await Promise.all([refreshPublicData(), isAdmin ? refreshAdminStudents() : Promise.resolve()]);
     } catch (error) {
-      setEnrollMessage(error.message || "Enrollment failed.");
+      setEnrollMessage(error.message || copy.enroll.failed);
     } finally {
       setEnrollSubmitting(false);
     }
@@ -278,7 +737,7 @@ function App() {
       setLoginForm(initialLoginForm);
       setAuthOpen(false);
     } catch (error) {
-      setAuthMessage(error.message || "Login failed.");
+      setAuthMessage(error.message || copy.auth.loginFailed);
     } finally {
       setAuthSubmitting(false);
     }
@@ -298,7 +757,7 @@ function App() {
       setSignupForm(initialSignupForm);
       setAuthOpen(false);
     } catch (error) {
-      setAuthMessage(error.message || "Signup failed.");
+      setAuthMessage(error.message || copy.auth.signupFailed);
     } finally {
       setAuthSubmitting(false);
     }
@@ -344,15 +803,15 @@ function App() {
 
       if (editingPhotoId) {
         await updateGalleryPhoto(editingPhotoId, payload);
-        setDashboardMessage("Gallery photo updated.");
+        setDashboardMessage(copy.dashboard.galleryUpdated);
       } else {
         await createGalleryPhoto(payload);
-        setDashboardMessage("Gallery photo created.");
+        setDashboardMessage(copy.dashboard.galleryCreated);
       }
       cancelPhotoEdit();
       await refreshPublicData();
     } catch (error) {
-      setDashboardMessage(error.message || "Could not save gallery photo.");
+      setDashboardMessage(error.message || copy.dashboard.gallerySaveError);
     } finally {
       setGallerySubmitting(false);
     }
@@ -365,10 +824,10 @@ function App() {
       if (editingPhotoId === photoId) {
         cancelPhotoEdit();
       }
-      setDashboardMessage("Gallery photo removed.");
+      setDashboardMessage(copy.dashboard.galleryRemoved);
       await refreshPublicData();
     } catch (error) {
-      setDashboardMessage(error.message || "Could not remove gallery photo.");
+      setDashboardMessage(error.message || copy.dashboard.galleryDeleteError);
     }
   }
 
@@ -382,10 +841,10 @@ function App() {
         message: notificationForm.message.trim()
       });
       setNotificationForm(initialNotificationForm);
-      setDashboardMessage("Notification published.");
+      setDashboardMessage(copy.dashboard.notificationPublished);
       await refreshPublicData();
     } catch (error) {
-      setDashboardMessage(error.message || "Could not publish notification.");
+      setDashboardMessage(error.message || copy.dashboard.notificationPublishError);
     } finally {
       setNotificationSubmitting(false);
     }
@@ -395,10 +854,10 @@ function App() {
     setDashboardMessage("");
     try {
       await deleteNotification(notificationId);
-      setDashboardMessage("Notification removed.");
+      setDashboardMessage(copy.dashboard.notificationRemoved);
       await refreshPublicData();
     } catch (error) {
-      setDashboardMessage(error.message || "Could not remove notification.");
+      setDashboardMessage(error.message || copy.dashboard.notificationDeleteError);
     }
   }
 
@@ -425,45 +884,45 @@ function App() {
             <div className="nav-actions">
               <nav>
                 <a href="#home" onClick={handleNavClick}>
-                Home
-              </a>
+                  {copy.nav.home}
+                </a>
                 <a href="#about" onClick={handleNavClick}>
-                About
-              </a>
+                  {copy.nav.about}
+                </a>
                 <a href="#courses" onClick={handleNavClick}>
-                Courses
-              </a>
+                  {copy.nav.courses}
+                </a>
                 <a href="#gallery" onClick={handleNavClick}>
-                Gallery
-              </a>
+                  {copy.nav.gallery}
+                </a>
                 <a href="#enroll" onClick={handleNavClick}>
-                Enroll
-              </a>
+                  {copy.nav.enroll}
+                </a>
                 {isAdmin ? (
                   <a href="#dashboard" onClick={handleNavClick}>
-                  Dashboard
-                </a>
+                    {copy.nav.dashboard}
+                  </a>
                 ) : null}
               </nav>
 
               <div className="auth-actions">
-                {sessionLoading ? <span className="auth-chip">Loading...</span> : null}
+                {sessionLoading ? <span className="auth-chip">{copy.auth.loading}</span> : null}
                 {!sessionLoading && !user ? (
                   <>
                     <button type="button" className="nav-small-btn" onClick={() => openAuth("login")}>
-                    Login
-                  </button>
+                      {copy.auth.login}
+                    </button>
                     <button type="button" className="nav-small-btn alt" onClick={() => openAuth("signup")}>
-                    Sign Up
-                  </button>
+                      {copy.auth.signUp}
+                    </button>
                   </>
                 ) : null}
                 {!sessionLoading && user ? (
                   <>
                     <span className="auth-chip">{user.name || user.email}</span>
                     <button type="button" className="nav-small-btn alt" onClick={handleLogout}>
-                    Logout
-                  </button>
+                      {copy.auth.logout}
+                    </button>
                   </>
                 ) : null}
               </div>
@@ -471,11 +930,27 @@ function App() {
           </div>
 
           <div className="header-controls">
+            <div className="lang-picker">
+              <label htmlFor="ui-language" className="sr-only">
+                {copy.language}
+              </label>
+              <select
+                id="ui-language"
+                aria-label={copy.language}
+                value={uiLanguage}
+                onChange={(event) => setUiLanguage(event.target.value)}
+              >
+                <option value="en">English</option>
+                <option value="fr">Francais</option>
+                <option value="es">Espanol</option>
+              </select>
+            </div>
+
             <div className="notif-wrap">
               <button
                 type="button"
                 className="notif-btn"
-                aria-label="Notifications"
+                aria-label={copy.notifications.title}
                 onClick={() => setNotifOpen((previous) => !previous)}
               >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -486,12 +961,12 @@ function App() {
 
               {notifOpen ? (
                 <div className="notif-menu">
-                  <div className="notif-menu-title">Notifications</div>
-                  {notifications.length === 0 ? <p className="notif-empty">No notifications.</p> : null}
+                  <div className="notif-menu-title">{copy.notifications.title}</div>
+                  {notifications.length === 0 ? <p className="notif-empty">{copy.notifications.empty}</p> : null}
                   {notifications.map((note) => (
                     <article key={note.id} className="notif-item">
                       <p>{note.title}</p>
-                      <span>{formatDate(note.createdAt)}</span>
+                      <span>{formatDate(note.createdAt, dateLocale)}</span>
                     </article>
                   ))}
                 </div>
@@ -501,7 +976,7 @@ function App() {
             <button
               type="button"
               className={`menu-toggle ${menuOpen ? "open" : ""}`}
-              aria-label="Toggle navigation menu"
+              aria-label={copy.nav.toggleMenu}
               aria-expanded={menuOpen}
               aria-controls="main-nav-panel"
               onClick={() => {
@@ -519,16 +994,14 @@ function App() {
 
       <section id="home" className="hero">
         <div className="container hero-content">
-          <p className="hero-tag">Global communication starts here</p>
+          <p className="hero-tag">{copy.hero.tag}</p>
           <h1>
-            Learn Spanish, English, and more
-            <span> at Maison de Savoir</span>
+            {copy.hero.titleMain}
+            <span>{copy.hero.titleAccent}</span>
           </h1>
-          <p className="hero-desc">
-            Explore structured courses, enroll students, and follow learning progress step by step.
-          </p>
+          <p className="hero-desc">{copy.hero.desc}</p>
           <a className="hero-btn" href="#courses" onClick={() => setNotifOpen(false)}>
-            Start Learning
+            {copy.hero.cta}
           </a>
         </div>
       </section>
@@ -536,39 +1009,29 @@ function App() {
       <section id="about" className="about">
         <div className="container">
           <div className="section-head">
-            <h2>GHAZOUA</h2>
-            <p>La maison du savoir</p>
+            <h2>{copy.about.city}</h2>
+            <p>{copy.about.subtitle}</p>
           </div>
 
           <article className="about-card">
-            <h3>Accompagnement CNED - Primaire & Collège</h3>
-            <p className="about-quote">« Nous plantons des graines pour le futur »</p>
-            <p className="about-lead">Un cadre bienveillant pour apprendre autrement</p>
-            <p>
-              La Maison du Savoir accompagne les élèves du primaire et du collège inscrits au CNED,
-              dans un environnement serein, stimulant et personnalisé.
-            </p>
+            <h3>{copy.about.title}</h3>
+            <p className="about-quote">{copy.about.quote}</p>
+            <p className="about-lead">{copy.about.lead}</p>
+            <p>{copy.about.paragraph}</p>
 
-            <h4>Notre accompagnement comprend:</h4>
+            <h4>{copy.about.includesTitle}</h4>
             <ul className="about-list">
-              <li>Accueil en journée, du lundi au vendredi</li>
-              <li>Encadrement par une équipe pédagogique bienveillante</li>
-              <li>Suivi individualisé des cours CNED</li>
-              <li>Petits groupes pour un apprentissage efficace</li>
-              <li>
-                Activités complémentaires : ateliers créatifs, jeux éducatifs, expression orale
-              </li>
+              {copy.about.includes.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
 
-            <h4>Un lieu chaleureux et inspirant</h4>
-            <p>
-              Située à Ghazoua (Km8, route de Sidi Kaouki), La Maison du Savoir est un espace calme
-              et lumineux, propice à la concentration et à l’épanouissement.
-            </p>
+            <h4>{copy.about.placeTitle}</h4>
+            <p>{copy.about.placeText}</p>
             <p className="about-phone">
               <a href="tel:+212724191970">0724 191 970</a>
             </p>
-            <p className="about-end">Un lieu ouvert sur le monde, la nature et les savoirs.</p>
+            <p className="about-end">{copy.about.ending}</p>
           </article>
         </div>
       </section>
@@ -577,19 +1040,19 @@ function App() {
         <div className="container stats-grid">
           <article className="stat-card">
             <strong>{stats.languages}</strong>
-            <span>Programmes</span>
+            <span>{copy.stats.programs}</span>
           </article>
           <article className="stat-card">
             <strong>{stats.courses}</strong>
-            <span>Courses</span>
+            <span>{copy.stats.courses}</span>
           </article>
           <article className="stat-card">
             <strong>{stats.lessons}</strong>
-            <span>Lessons</span>
+            <span>{copy.stats.lessons}</span>
           </article>
           <article className="stat-card">
             <strong>{stats.students}</strong>
-            <span>Students</span>
+            <span>{copy.stats.students}</span>
           </article>
         </div>
       </section>
@@ -597,11 +1060,8 @@ function App() {
       <section id="courses" className="courses">
         <div className="container">
           <div className="section-head">
-            <h2>Programmes Maison du Savoir</h2>
-            <p>
-              Accompagnement CNED primaire et college, petits groupes, et activites
-              complementaires.
-            </p>
+            <h2>{copy.catalog.heading}</h2>
+            <p>{copy.catalog.subtitle}</p>
           </div>
 
           <div className="filters">
@@ -609,7 +1069,7 @@ function App() {
               value={selectedLanguage}
               onChange={(event) => setSelectedLanguage(event.target.value)}
             >
-              <option value="all">Tous les programmes</option>
+              <option value="all">{copy.catalog.allPrograms}</option>
               {languages.map((language) => (
                 <option key={language.id} value={language.id}>
                   {language.name}
@@ -618,14 +1078,14 @@ function App() {
             </select>
             <input
               type="search"
-              placeholder="Rechercher un programme..."
+              placeholder={copy.catalog.searchPlaceholder}
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
           </div>
 
           {catalogError ? <p className="status error">{catalogError}</p> : null}
-          {loadingCatalog ? <p className="status">Loading courses...</p> : null}
+          {loadingCatalog ? <p className="status">{copy.catalog.loading}</p> : null}
 
           {!loadingCatalog ? (
             <div className="courses-grid">
@@ -642,17 +1102,18 @@ function App() {
                   <div className="course-content">
                     <h3>{course.title}</h3>
                     <p className="meta">
-                      {course.level} | {course.durationWeeks} weeks | {course.lessonCount} lessons
+                      {translateCourseLevel(course.level, uiLanguage)} | {course.durationWeeks}{" "}
+                      {copy.catalog.weeks} | {course.lessonCount} {copy.catalog.lessons}
                     </p>
                     <p>{course.description}</p>
                     <button type="button" onClick={() => jumpToEnroll(course.id)}>
-                      Enroll in this course
+                      {copy.catalog.enrollBtn}
                     </button>
                   </div>
                 </article>
               ))}
               {!filteredCourses.length ? (
-                <p className="status">No courses match your current filter.</p>
+                <p className="status">{copy.catalog.empty}</p>
               ) : null}
             </div>
           ) : null}
@@ -662,8 +1123,8 @@ function App() {
       <section id="gallery" className="gallery">
         <div className="container">
           <div className="section-head">
-            <h2>Learning Gallery</h2>
-            <p>Snapshots from language sessions, workshops, and student activities.</p>
+            <h2>{copy.gallery.heading}</h2>
+            <p>{copy.gallery.subtitle}</p>
           </div>
 
           <div className="gallery-grid">
@@ -683,15 +1144,13 @@ function App() {
       <section id="enroll" className="enroll">
         <div className="container enroll-wrap">
           <div>
-            <h2>Enroll a Student</h2>
-            <p>
-              Use this form to register a student with full name, email, and phone number.
-            </p>
+            <h2>{copy.enroll.heading}</h2>
+            <p>{copy.enroll.subtitle}</p>
           </div>
           <form className="enroll-form" onSubmit={handleEnrollSubmit}>
             <input
               type="text"
-              placeholder="Full name"
+              placeholder={copy.enroll.fullName}
               value={enrollForm.fullName}
               onChange={(event) =>
                 setEnrollForm((previous) => ({ ...previous, fullName: event.target.value }))
@@ -700,7 +1159,7 @@ function App() {
             />
             <input
               type="email"
-              placeholder="Email"
+              placeholder={copy.enroll.email}
               value={enrollForm.email}
               onChange={(event) =>
                 setEnrollForm((previous) => ({ ...previous, email: event.target.value }))
@@ -709,7 +1168,7 @@ function App() {
             />
             <input
               type="tel"
-              placeholder="Phone number"
+              placeholder={copy.enroll.phone}
               value={enrollForm.phone}
               onChange={(event) =>
                 setEnrollForm((previous) => ({ ...previous, phone: event.target.value }))
@@ -730,7 +1189,7 @@ function App() {
               ))}
             </select>
             <button type="submit" disabled={enrollSubmitting}>
-              {enrollSubmitting ? "Saving..." : "Create Enrollment"}
+              {enrollSubmitting ? copy.enroll.saving : copy.enroll.submit}
             </button>
             {enrollMessage ? <p className="status">{enrollMessage}</p> : null}
           </form>
@@ -741,19 +1200,19 @@ function App() {
         <section id="dashboard" className="dashboard">
           <div className="container">
             <div className="section-head">
-              <h2>Admin Dashboard</h2>
-              <p>Only admin can access this section.</p>
+              <h2>{copy.dashboard.heading}</h2>
+              <p>{copy.dashboard.subtitle}</p>
             </div>
             {dashboardMessage ? <p className="status">{dashboardMessage}</p> : null}
             {adminError ? <p className="status error">{adminError}</p> : null}
 
             <div className="admin-grid">
               <article className="admin-card">
-                <h3>Manage Gallery</h3>
+                <h3>{copy.dashboard.manageGallery}</h3>
                 <form className="admin-form" onSubmit={handleSavePhoto}>
                   <input
                     type="text"
-                    placeholder="Photo title"
+                    placeholder={copy.dashboard.photoTitle}
                     value={galleryForm.title}
                     onChange={(event) =>
                       setGalleryForm((previous) => ({ ...previous, title: event.target.value }))
@@ -762,7 +1221,7 @@ function App() {
                   />
                   <input
                     type="url"
-                    placeholder="Image URL"
+                    placeholder={copy.dashboard.imageUrl}
                     value={galleryForm.imageUrl}
                     onChange={(event) =>
                       setGalleryForm((previous) => ({ ...previous, imageUrl: event.target.value }))
@@ -771,7 +1230,7 @@ function App() {
                   />
                   <input
                     type="number"
-                    placeholder="Position"
+                    placeholder={copy.dashboard.position}
                     value={galleryForm.position}
                     onChange={(event) =>
                       setGalleryForm((previous) => ({
@@ -784,14 +1243,14 @@ function App() {
                   <div className="admin-form-actions">
                     <button type="submit" disabled={gallerySubmitting}>
                       {gallerySubmitting
-                        ? "Saving..."
+                        ? copy.enroll.saving
                         : editingPhotoId
-                          ? "Update Photo"
-                          : "Add Photo"}
+                          ? copy.dashboard.updatePhoto
+                          : copy.dashboard.addPhoto}
                     </button>
                     {editingPhotoId ? (
                       <button type="button" className="secondary-btn" onClick={cancelPhotoEdit}>
-                        Cancel
+                        {copy.dashboard.cancel}
                       </button>
                     ) : null}
                   </div>
@@ -805,10 +1264,10 @@ function App() {
                       </div>
                       <div className="admin-row-actions">
                         <button type="button" className="secondary-btn" onClick={() => startEditPhoto(photo)}>
-                          Edit
+                          {copy.dashboard.edit}
                         </button>
                         <button type="button" className="danger-btn" onClick={() => handleDeletePhoto(photo.id)}>
-                          Delete
+                          {copy.dashboard.delete}
                         </button>
                       </div>
                     </div>
@@ -817,11 +1276,11 @@ function App() {
               </article>
 
               <article className="admin-card">
-                <h3>Manage Notifications</h3>
+                <h3>{copy.dashboard.manageNotifications}</h3>
                 <form className="admin-form" onSubmit={handleCreateNotification}>
                   <input
                     type="text"
-                    placeholder="Notification title"
+                    placeholder={copy.dashboard.notificationTitle}
                     value={notificationForm.title}
                     onChange={(event) =>
                       setNotificationForm((previous) => ({ ...previous, title: event.target.value }))
@@ -829,14 +1288,14 @@ function App() {
                     required
                   />
                   <textarea
-                    placeholder="Notification message"
+                    placeholder={copy.dashboard.notificationMessage}
                     value={notificationForm.message}
                     onChange={(event) =>
                       setNotificationForm((previous) => ({ ...previous, message: event.target.value }))
                     }
                   />
                   <button type="submit" disabled={notificationSubmitting}>
-                    {notificationSubmitting ? "Publishing..." : "Publish Notification"}
+                    {notificationSubmitting ? copy.dashboard.publishing : copy.dashboard.publish}
                   </button>
                 </form>
                 <div className="admin-list">
@@ -844,7 +1303,7 @@ function App() {
                     <div key={`admin-note-${notification.id}`} className="admin-row">
                       <div>
                         <strong>{notification.title}</strong>
-                        <p>{formatDate(notification.createdAt)}</p>
+                        <p>{formatDate(notification.createdAt, dateLocale)}</p>
                       </div>
                       <div className="admin-row-actions">
                         <button
@@ -852,7 +1311,7 @@ function App() {
                           className="danger-btn"
                           onClick={() => handleDeleteNotification(notification.id)}
                         >
-                          Delete
+                          {copy.dashboard.delete}
                         </button>
                       </div>
                     </div>
@@ -863,14 +1322,14 @@ function App() {
 
             <article className="admin-card student-card">
               <div className="student-head">
-                <h3>Student Contacts</h3>
+                <h3>{copy.dashboard.contacts}</h3>
                 <button type="button" className="secondary-btn" onClick={() => refreshAdminStudents()}>
-                  Refresh
+                  {copy.dashboard.refresh}
                 </button>
               </div>
-              {adminLoading ? <p className="status">Loading students...</p> : null}
+              {adminLoading ? <p className="status">{copy.dashboard.loadingStudents}</p> : null}
               {!adminLoading && adminStudents.length === 0 ? (
-                <p className="status">No students found yet.</p>
+                <p className="status">{copy.dashboard.noStudents}</p>
               ) : null}
               <div className="student-list">
                 {adminStudents.map((student) => (
@@ -878,7 +1337,7 @@ function App() {
                     <div className="student-main">
                       <strong>{student.fullName}</strong>
                       <p>{student.email}</p>
-                      <p>{student.phone || "No phone provided"}</p>
+                      <p>{student.phone || copy.dashboard.noPhone}</p>
                     </div>
                   </div>
                 ))}
@@ -902,12 +1361,12 @@ function App() {
             </button>
             {authMode === "login" ? (
               <>
-                <h3>Login</h3>
-                <p>Use your account credentials.</p>
+                <h3>{copy.auth.loginTitle}</h3>
+                <p>{copy.auth.loginSubtitle}</p>
                 <form className="auth-form" onSubmit={handleLogin}>
                   <input
                     type="email"
-                    placeholder="Email"
+                    placeholder={copy.enroll.email}
                     value={loginForm.email}
                     onChange={(event) =>
                       setLoginForm((previous) => ({ ...previous, email: event.target.value }))
@@ -916,7 +1375,7 @@ function App() {
                   />
                   <input
                     type="password"
-                    placeholder="Password"
+                    placeholder={copy.auth.password}
                     value={loginForm.password}
                     onChange={(event) =>
                       setLoginForm((previous) => ({ ...previous, password: event.target.value }))
@@ -924,21 +1383,21 @@ function App() {
                     required
                   />
                   <button type="submit" disabled={authSubmitting}>
-                    {authSubmitting ? "Signing in..." : "Login"}
+                    {authSubmitting ? copy.auth.signInLoading : copy.auth.login}
                   </button>
                 </form>
                 <button type="button" className="auth-switch" onClick={() => setAuthMode("signup")}>
-                  Need an account? Sign up
+                  {copy.auth.needAccount}
                 </button>
               </>
             ) : (
               <>
-                <h3>Sign Up</h3>
-                <p>Create a student account.</p>
+                <h3>{copy.auth.signUpTitle}</h3>
+                <p>{copy.auth.signUpSubtitle}</p>
                 <form className="auth-form" onSubmit={handleSignup}>
                   <input
                     type="text"
-                    placeholder="Full name"
+                    placeholder={copy.enroll.fullName}
                     value={signupForm.name}
                     onChange={(event) =>
                       setSignupForm((previous) => ({ ...previous, name: event.target.value }))
@@ -947,7 +1406,7 @@ function App() {
                   />
                   <input
                     type="email"
-                    placeholder="Email"
+                    placeholder={copy.enroll.email}
                     value={signupForm.email}
                     onChange={(event) =>
                       setSignupForm((previous) => ({ ...previous, email: event.target.value }))
@@ -956,7 +1415,7 @@ function App() {
                   />
                   <input
                     type="password"
-                    placeholder="Password (min 8 chars)"
+                    placeholder={copy.auth.passwordMin}
                     value={signupForm.password}
                     onChange={(event) =>
                       setSignupForm((previous) => ({ ...previous, password: event.target.value }))
@@ -964,11 +1423,11 @@ function App() {
                     required
                   />
                   <button type="submit" disabled={authSubmitting}>
-                    {authSubmitting ? "Creating..." : "Sign Up"}
+                    {authSubmitting ? copy.auth.signUpLoading : copy.auth.signUp}
                   </button>
                 </form>
                 <button type="button" className="auth-switch" onClick={() => setAuthMode("login")}>
-                  Already have an account? Login
+                  {copy.auth.haveAccount}
                 </button>
               </>
             )}
@@ -981,3 +1440,4 @@ function App() {
 }
 
 export default App;
+
