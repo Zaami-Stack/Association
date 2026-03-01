@@ -46,6 +46,26 @@ function getCourseDetails(courseId) {
   return request(`/courses?courseId=${encodeURIComponent(String(courseId))}`);
 }
 
+function createCourse(payload) {
+  return request("/courses", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+function deleteCourse(courseId) {
+  return request(`/courses?id=${encodeURIComponent(String(courseId))}`, {
+    method: "DELETE"
+  });
+}
+
+function updateCourse(courseId, payload) {
+  return request(`/courses?id=${encodeURIComponent(String(courseId))}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
+}
+
 function getGalleryPhotos() {
   return request("/gallery");
 }
@@ -140,8 +160,10 @@ function updateLessonProgress(enrollmentId, lessonId, completed) {
 }
 
 export {
+  createCourse,
   createGalleryPhoto,
   createNotification,
+  deleteCourse,
   enrollStudent,
   deleteGalleryPhoto,
   deleteNotification,
@@ -158,6 +180,7 @@ export {
   login,
   logout,
   signup,
+  updateCourse,
   updateGalleryPhoto,
   updateLessonProgress
 };

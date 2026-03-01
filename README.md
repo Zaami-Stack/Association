@@ -53,6 +53,9 @@ The serverless backend routes are:
 - `GET /api/languages`
 - `GET /api/courses?languageId=&search=`
 - `GET /api/courses?courseId=`
+- `POST /api/courses` (admin)
+- `PATCH /api/courses?id=` (admin)
+- `DELETE /api/courses?id=` (admin)
 - `GET /api/gallery`
 - `POST /api/gallery` (admin)
 - `PATCH /api/gallery?id=` (admin)

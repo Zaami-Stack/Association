@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  createCourse,
   createGalleryPhoto,
   createNotification,
+  deleteCourse,
   deleteGalleryPhoto,
   deleteNotification,
   enrollStudent,
@@ -15,6 +17,7 @@ import {
   login,
   logout,
   signup,
+  updateCourse,
   updateGalleryPhoto
 } from "./api";
 
@@ -45,6 +48,15 @@ const initialGalleryForm = {
 const initialNotificationForm = {
   title: "",
   message: ""
+};
+
+const initialProgramForm = {
+  languageId: "",
+  title: "",
+  level: "Beginner",
+  durationWeeks: 12,
+  description: "",
+  imageUrl: ""
 };
 
 const SUPPORTED_UI_LANGS = ["en", "fr", "es"];
@@ -162,6 +174,16 @@ const UI_COPY = {
       notificationMessage: "Notification message",
       publish: "Publish Notification",
       publishing: "Publishing...",
+      managePrograms: "Manage Programs",
+      programLanguage: "Program language",
+      programTitle: "Program title",
+      programLevel: "Program level",
+      programDurationWeeks: "Duration (weeks)",
+      programDescription: "Program description",
+      programImageUrl: "Program image URL",
+      addProgram: "Add Program",
+      updateProgram: "Update Program",
+      noPrograms: "No programs found.",
       contacts: "Student Contacts",
       refresh: "Refresh",
       loadingStudents: "Loading students...",
@@ -175,7 +197,12 @@ const UI_COPY = {
       notificationPublished: "Notification published.",
       notificationRemoved: "Notification removed.",
       notificationPublishError: "Could not publish notification.",
-      notificationDeleteError: "Could not remove notification."
+      notificationDeleteError: "Could not remove notification.",
+      programCreated: "Program created.",
+      programUpdated: "Program updated.",
+      programRemoved: "Program removed.",
+      programSaveError: "Could not create program.",
+      programDeleteError: "Could not remove program."
     },
     common: {
       update: "Update",
@@ -298,6 +325,16 @@ const UI_COPY = {
       notificationMessage: "Message de la notification",
       publish: "Publier la notification",
       publishing: "Publication...",
+      managePrograms: "Gerer les programmes",
+      programLanguage: "Langue du programme",
+      programTitle: "Titre du programme",
+      programLevel: "Niveau du programme",
+      programDurationWeeks: "Duree (semaines)",
+      programDescription: "Description du programme",
+      programImageUrl: "URL de l'image du programme",
+      addProgram: "Ajouter le programme",
+      updateProgram: "Mettre a jour le programme",
+      noPrograms: "Aucun programme trouve.",
       contacts: "Contacts eleves",
       refresh: "Actualiser",
       loadingStudents: "Chargement des eleves...",
@@ -311,7 +348,12 @@ const UI_COPY = {
       notificationPublished: "Notification publiee.",
       notificationRemoved: "Notification supprimee.",
       notificationPublishError: "Impossible de publier la notification.",
-      notificationDeleteError: "Impossible de supprimer la notification."
+      notificationDeleteError: "Impossible de supprimer la notification.",
+      programCreated: "Programme cree.",
+      programUpdated: "Programme mis a jour.",
+      programRemoved: "Programme supprime.",
+      programSaveError: "Impossible de creer le programme.",
+      programDeleteError: "Impossible de supprimer le programme."
     },
     common: {
       update: "Mettre a jour",
@@ -434,6 +476,16 @@ const UI_COPY = {
       notificationMessage: "Mensaje de notificacion",
       publish: "Publicar notificacion",
       publishing: "Publicando...",
+      managePrograms: "Gestionar programas",
+      programLanguage: "Idioma del programa",
+      programTitle: "Titulo del programa",
+      programLevel: "Nivel del programa",
+      programDurationWeeks: "Duracion (semanas)",
+      programDescription: "Descripcion del programa",
+      programImageUrl: "URL de imagen del programa",
+      addProgram: "Agregar programa",
+      updateProgram: "Actualizar programa",
+      noPrograms: "No hay programas.",
       contacts: "Contactos de estudiantes",
       refresh: "Actualizar",
       loadingStudents: "Cargando estudiantes...",
@@ -447,7 +499,12 @@ const UI_COPY = {
       notificationPublished: "Notificacion publicada.",
       notificationRemoved: "Notificacion eliminada.",
       notificationPublishError: "No se pudo publicar la notificacion.",
-      notificationDeleteError: "No se pudo eliminar la notificacion."
+      notificationDeleteError: "No se pudo eliminar la notificacion.",
+      programCreated: "Programa creado.",
+      programUpdated: "Programa actualizado.",
+      programRemoved: "Programa eliminado.",
+      programSaveError: "No se pudo crear el programa.",
+      programDeleteError: "No se pudo eliminar el programa."
     },
     common: {
       update: "Actualizar",
@@ -552,6 +609,9 @@ function App() {
   const [gallerySubmitting, setGallerySubmitting] = useState(false);
   const [notificationForm, setNotificationForm] = useState(initialNotificationForm);
   const [notificationSubmitting, setNotificationSubmitting] = useState(false);
+  const [programForm, setProgramForm] = useState(initialProgramForm);
+  const [editingProgramId, setEditingProgramId] = useState("");
+  const [programSubmitting, setProgramSubmitting] = useState(false);
   const [dashboardMessage, setDashboardMessage] = useState("");
 
   const copy = useMemo(() => UI_COPY[uiLanguage] || UI_COPY.en, [uiLanguage]);
@@ -581,6 +641,15 @@ function App() {
       setEnrollForm((previous) => ({ ...previous, courseId: String(courses[0].id) }));
     }
   }, [courses, enrollForm.courseId]);
+
+  useEffect(() => {
+    if (!programForm.languageId && languages.length > 0) {
+      setProgramForm((previous) => ({
+        ...previous,
+        languageId: String(languages[0].id)
+      }));
+    }
+  }, [languages, programForm.languageId]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -625,6 +694,8 @@ function App() {
     } else {
       setAdminStudents([]);
       setAdminError("");
+      setEditingProgramId("");
+      setProgramForm(initialProgramForm);
       setDashboardMessage("");
     }
   }, [isAdmin]);
@@ -858,6 +929,76 @@ function App() {
       await refreshPublicData();
     } catch (error) {
       setDashboardMessage(error.message || copy.dashboard.notificationDeleteError);
+    }
+  }
+
+  function startEditProgram(course) {
+    setEditingProgramId(String(course.id));
+    setProgramForm({
+      languageId: String(course.languageId),
+      title: course.title,
+      level: course.level,
+      durationWeeks: Number(course.durationWeeks || 1),
+      description: course.description || "",
+      imageUrl: course.imageUrl || ""
+    });
+    setDashboardMessage("");
+  }
+
+  function cancelProgramEdit(clearMessage = true) {
+    setEditingProgramId("");
+    setProgramForm({
+      ...initialProgramForm,
+      languageId: languages[0] ? String(languages[0].id) : ""
+    });
+    if (clearMessage) {
+      setDashboardMessage("");
+    }
+  }
+
+  async function handleSaveProgram(event) {
+    event.preventDefault();
+    setProgramSubmitting(true);
+    setDashboardMessage("");
+
+    try {
+      const payload = {
+        languageId: Number(programForm.languageId),
+        title: programForm.title.trim(),
+        level: programForm.level,
+        durationWeeks: Number(programForm.durationWeeks),
+        description: programForm.description.trim(),
+        imageUrl: programForm.imageUrl.trim()
+      };
+
+      if (editingProgramId) {
+        await updateCourse(editingProgramId, payload);
+        cancelProgramEdit(false);
+        setDashboardMessage(copy.dashboard.programUpdated);
+      } else {
+        await createCourse(payload);
+        cancelProgramEdit(false);
+        setDashboardMessage(copy.dashboard.programCreated);
+      }
+      await refreshPublicData();
+    } catch (error) {
+      setDashboardMessage(error.message || copy.dashboard.programSaveError);
+    } finally {
+      setProgramSubmitting(false);
+    }
+  }
+
+  async function handleDeleteProgram(courseId) {
+    setDashboardMessage("");
+    try {
+      await deleteCourse(courseId);
+      if (String(courseId) === editingProgramId) {
+        cancelProgramEdit();
+      }
+      setDashboardMessage(copy.dashboard.programRemoved);
+      await refreshPublicData();
+    } catch (error) {
+      setDashboardMessage(error.message || copy.dashboard.programDeleteError);
     }
   }
 
@@ -1316,6 +1457,119 @@ function App() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </article>
+
+              <article className="admin-card">
+                <h3>{copy.dashboard.managePrograms}</h3>
+                <form className="admin-form" onSubmit={handleSaveProgram}>
+                  <select
+                    value={programForm.languageId}
+                    onChange={(event) =>
+                      setProgramForm((previous) => ({ ...previous, languageId: event.target.value }))
+                    }
+                    required
+                  >
+                    {languages.map((language) => (
+                      <option key={`program-language-${language.id}`} value={language.id}>
+                        {language.name}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    placeholder={copy.dashboard.programTitle}
+                    value={programForm.title}
+                    onChange={(event) =>
+                      setProgramForm((previous) => ({ ...previous, title: event.target.value }))
+                    }
+                    required
+                  />
+                  <select
+                    value={programForm.level}
+                    onChange={(event) =>
+                      setProgramForm((previous) => ({ ...previous, level: event.target.value }))
+                    }
+                    required
+                  >
+                    <option value="Beginner">{translateCourseLevel("Beginner", uiLanguage)}</option>
+                    <option value="Intermediate">{translateCourseLevel("Intermediate", uiLanguage)}</option>
+                    <option value="Advanced">{translateCourseLevel("Advanced", uiLanguage)}</option>
+                  </select>
+                  <input
+                    type="number"
+                    placeholder={copy.dashboard.programDurationWeeks}
+                    value={programForm.durationWeeks}
+                    onChange={(event) =>
+                      setProgramForm((previous) => ({
+                        ...previous,
+                        durationWeeks: Number(event.target.value || 1)
+                      }))
+                    }
+                    min="1"
+                    required
+                  />
+                  <textarea
+                    placeholder={copy.dashboard.programDescription}
+                    value={programForm.description}
+                    onChange={(event) =>
+                      setProgramForm((previous) => ({ ...previous, description: event.target.value }))
+                    }
+                    required
+                  />
+                  <input
+                    type="url"
+                    placeholder={copy.dashboard.programImageUrl}
+                    value={programForm.imageUrl}
+                    onChange={(event) =>
+                      setProgramForm((previous) => ({ ...previous, imageUrl: event.target.value }))
+                    }
+                    required
+                  />
+                  <div className="admin-form-actions">
+                    <button type="submit" disabled={programSubmitting}>
+                      {programSubmitting
+                        ? copy.enroll.saving
+                        : editingProgramId
+                          ? copy.dashboard.updateProgram
+                          : copy.dashboard.addProgram}
+                    </button>
+                    {editingProgramId ? (
+                      <button type="button" className="secondary-btn" onClick={cancelProgramEdit}>
+                        {copy.dashboard.cancel}
+                      </button>
+                    ) : null}
+                  </div>
+                </form>
+                <div className="admin-list">
+                  {courses.map((course) => (
+                    <div key={`admin-course-${course.id}`} className="admin-row">
+                      <div>
+                        <strong>{course.title}</strong>
+                        <p>
+                          {course.languageName} | {translateCourseLevel(course.level, uiLanguage)} |{" "}
+                          {course.durationWeeks} {copy.catalog.weeks}
+                        </p>
+                      </div>
+                      <div className="admin-row-actions">
+                        <button
+                          type="button"
+                          className="secondary-btn"
+                          onClick={() => startEditProgram(course)}
+                        >
+                          {copy.dashboard.edit}
+                        </button>
+                        <button
+                          type="button"
+                          className="danger-btn"
+                          onClick={() => handleDeleteProgram(course.id)}
+                        >
+                          {copy.dashboard.delete}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {courses.length === 0 ? <p className="status">{copy.dashboard.noPrograms}</p> : null}
                 </div>
               </article>
             </div>
