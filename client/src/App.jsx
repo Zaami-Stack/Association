@@ -13,7 +13,6 @@ import {
   getLanguages,
   getNotifications,
   getSession,
-  getStats,
   login,
   logout,
   signup,
@@ -571,12 +570,6 @@ function translateCourseLevel(level, uiLanguage) {
 }
 
 function App() {
-  const [stats, setStats] = useState({
-    languages: 0,
-    courses: 0,
-    lessons: 0,
-    students: 0
-  });
   const [languages, setLanguages] = useState([]);
   const [courses, setCourses] = useState([]);
   const [galleryPhotos, setGalleryPhotos] = useState([]);
@@ -718,14 +711,12 @@ function App() {
     setLoadingCatalog(true);
     setCatalogError("");
     try {
-      const [statsData, languageData, courseData, galleryData, notificationsData] = await Promise.all([
-        getStats(),
+      const [languageData, courseData, galleryData, notificationsData] = await Promise.all([
         getLanguages(),
         getCourses(),
         getGalleryPhotos(),
         getNotifications(10)
       ]);
-      setStats(statsData);
       setLanguages(languageData);
       setCourses(courseData);
       setGalleryPhotos(Array.isArray(galleryData) ? galleryData : []);
@@ -1182,27 +1173,6 @@ function App() {
               </a>
             </p>
             <p className="about-end">{copy.about.ending}</p>
-          </article>
-        </div>
-      </section>
-
-      <section className="stats">
-        <div className="container stats-grid">
-          <article className="stat-card">
-            <strong>{stats.languages}</strong>
-            <span>{copy.stats.programs}</span>
-          </article>
-          <article className="stat-card">
-            <strong>{stats.courses}</strong>
-            <span>{copy.stats.courses}</span>
-          </article>
-          <article className="stat-card">
-            <strong>{stats.lessons}</strong>
-            <span>{copy.stats.lessons}</span>
-          </article>
-          <article className="stat-card">
-            <strong>{stats.students}</strong>
-            <span>{copy.stats.students}</span>
           </article>
         </div>
       </section>
