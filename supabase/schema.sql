@@ -50,6 +50,30 @@ create table if not exists lesson_progress (
   unique (enrollment_id, lesson_id)
 );
 
+create table if not exists users (
+  id text primary key,
+  name text not null,
+  email text not null unique,
+  password text not null,
+  role text not null check (role in ('student', 'admin')),
+  created_at timestamptz not null default now()
+);
+
+create table if not exists notifications (
+  id text primary key,
+  title text not null,
+  message text not null default '',
+  created_at timestamptz not null default now()
+);
+
+create table if not exists gallery_photos (
+  id text primary key,
+  title text not null,
+  image_url text not null,
+  position integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
 create index if not exists idx_languages_name on languages (name);
 create index if not exists idx_courses_language on courses (language_id);
 create index if not exists idx_lessons_course on lessons (course_id);
@@ -58,4 +82,6 @@ create index if not exists idx_enrollments_student on enrollments (student_id);
 create index if not exists idx_enrollments_course on enrollments (course_id);
 create index if not exists idx_lesson_progress_enrollment on lesson_progress (enrollment_id);
 create index if not exists idx_lesson_progress_lesson on lesson_progress (lesson_id);
-
+create index if not exists idx_users_email on users (email);
+create index if not exists idx_notifications_created_at on notifications (created_at desc);
+create index if not exists idx_gallery_position on gallery_photos (position asc, created_at desc);

@@ -39,6 +39,9 @@ URLs:
 3. Add environment variables in Vercel project settings:
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
+   - `AUTH_SECRET` (strong random string, at least 24 chars)
+   - `ADMIN_EMAIL`
+   - `ADMIN_PASSWORD`
 4. Deploy this repo to Vercel.
 
 The serverless backend routes are:
@@ -48,10 +51,22 @@ The serverless backend routes are:
 - `GET /api/languages`
 - `GET /api/courses?languageId=&search=`
 - `GET /api/courses/:courseId`
+- `GET /api/gallery`
+- `POST /api/gallery` (admin)
+- `PATCH /api/gallery/:photoId` (admin)
+- `DELETE /api/gallery/:photoId` (admin)
+- `GET /api/notifications`
+- `POST /api/notifications` (admin)
+- `DELETE /api/notifications/:notificationId` (admin)
 - `GET /api/enrollments?email=`
 - `POST /api/enrollments`
 - `GET /api/enrollments/:enrollmentId/progress`
 - `PATCH /api/enrollments/:enrollmentId/progress`
+- `GET /api/admin/students` (admin)
+- `POST /api/auth/login`
+- `POST /api/auth/signup` (student account)
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
 
 Seed data for languages/courses/lessons is inserted automatically on first request when Supabase is empty.
 

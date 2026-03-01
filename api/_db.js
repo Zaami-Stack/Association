@@ -1,4 +1,10 @@
-const { seedCourses, seedLanguages, seedLessons } = require("./_store");
+const {
+  seedCourses,
+  seedGalleryPhotos,
+  seedLanguages,
+  seedLessons,
+  seedNotifications
+} = require("./_store");
 
 function getSupabaseUrl() {
   return String(process.env.SUPABASE_URL || "").trim().replace(/\/$/, "");
@@ -110,6 +116,25 @@ function mapSeedLessonRow(lesson) {
   };
 }
 
+function mapSeedGalleryPhotoRow(photo) {
+  return {
+    id: photo.id,
+    title: photo.title,
+    image_url: photo.imageUrl,
+    position: photo.position,
+    created_at: photo.createdAt
+  };
+}
+
+function mapSeedNotificationRow(notification) {
+  return {
+    id: notification.id,
+    title: notification.title,
+    message: notification.message,
+    created_at: notification.createdAt
+  };
+}
+
 async function ensureSeedAssociationData() {
   if (!isDatabaseConfigured()) {
     return;
@@ -152,6 +177,40 @@ async function ensureSeedAssociationData() {
     });
   }
 
+  const galleryRows = await dbRequest({
+    table: "gallery_photos",
+    method: "GET",
+    query: { select: "id", limit: 1, order: "position.asc" },
+    prefer: null
+  });
+
+  if (Array.isArray(galleryRows) && galleryRows.length === 0) {
+    await dbRequest({
+      table: "gallery_photos",
+      method: "POST",
+      query: { on_conflict: "id" },
+      body: seedGalleryPhotos.map(mapSeedGalleryPhotoRow),
+      prefer: "resolution=merge-duplicates,return=minimal"
+    });
+  }
+
+  const notificationRows = await dbRequest({
+    table: "notifications",
+    method: "GET",
+    query: { select: "id", limit: 1, order: "created_at.desc" },
+    prefer: null
+  });
+
+  if (Array.isArray(notificationRows) && notificationRows.length === 0) {
+    await dbRequest({
+      table: "notifications",
+      method: "POST",
+      query: { on_conflict: "id" },
+      body: seedNotifications.map(mapSeedNotificationRow),
+      prefer: "resolution=merge-duplicates,return=minimal"
+    });
+  }
+
   globalThis.__ASSOCIATION_DB_SEEDED__ = true;
 }
 
@@ -161,4 +220,3 @@ module.exports = {
   isDatabaseConfigured,
   toInFilter
 };
-

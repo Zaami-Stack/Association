@@ -2,6 +2,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...(options.headers || {})
@@ -45,6 +46,76 @@ function getCourseDetails(courseId) {
   return request(`/courses/${courseId}`);
 }
 
+function getGalleryPhotos() {
+  return request("/gallery");
+}
+
+function createGalleryPhoto(payload) {
+  return request("/gallery", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+function updateGalleryPhoto(photoId, payload) {
+  return request(`/gallery/${photoId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload)
+  });
+}
+
+function deleteGalleryPhoto(photoId) {
+  return request(`/gallery/${photoId}`, {
+    method: "DELETE"
+  });
+}
+
+function getNotifications(limit = 20) {
+  return request(`/notifications?limit=${encodeURIComponent(String(limit))}`);
+}
+
+function createNotification(payload) {
+  return request("/notifications", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+function deleteNotification(notificationId) {
+  return request(`/notifications/${notificationId}`, {
+    method: "DELETE"
+  });
+}
+
+function getAdminStudents() {
+  return request("/admin/students");
+}
+
+function getSession() {
+  return request("/auth/me");
+}
+
+function login(payload) {
+  return request("/auth/login", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+function signup(payload) {
+  return request("/auth/signup", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+function logout() {
+  return request("/auth/logout", {
+    method: "POST",
+    body: JSON.stringify({})
+  });
+}
+
 function enrollStudent(payload) {
   return request("/enrollments", {
     method: "POST",
@@ -69,13 +140,24 @@ function updateLessonProgress(enrollmentId, lessonId, completed) {
 }
 
 export {
+  createGalleryPhoto,
+  createNotification,
   enrollStudent,
+  deleteGalleryPhoto,
+  deleteNotification,
+  getAdminStudents,
   getCourseDetails,
   getCourses,
   getEnrollmentProgress,
+  getGalleryPhotos,
   getLanguages,
+  getNotifications,
+  getSession,
   getStats,
   getStudentEnrollments,
+  login,
+  logout,
+  signup,
+  updateGalleryPhoto,
   updateLessonProgress
 };
-

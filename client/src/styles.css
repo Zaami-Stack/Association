@@ -59,6 +59,24 @@ a {
   gap: 14px;
 }
 
+.auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-chip {
+  color: #e6f7ff;
+  font-size: 0.78rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 7px 10px;
+  max-width: 170px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .logo {
   font-family: "Fraunces", serif;
   font-size: 1.86rem;
@@ -88,6 +106,27 @@ a {
 
 .nav nav a:hover {
   border-color: #ffc9b8;
+}
+
+.nav-small-btn {
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  background: transparent;
+  color: #effaff;
+  box-shadow: none;
+  font-size: 0.8rem;
+  padding: 8px 12px;
+}
+
+.nav-small-btn:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.14);
+  filter: none;
+}
+
+.nav-small-btn.alt {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .notif-wrap {
@@ -185,6 +224,12 @@ a {
   display: block;
   margin-top: 4px;
   font-size: 0.74rem;
+  color: #6a8299;
+}
+
+.notif-empty {
+  margin: 4px 10px 8px;
+  font-size: 0.84rem;
   color: #6a8299;
 }
 
@@ -483,6 +528,135 @@ textarea {
   gap: 10px;
 }
 
+.admin-grid {
+  margin-top: 18px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  padding: 16px;
+}
+
+.admin-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.03rem;
+}
+
+.admin-form {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-form textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.admin-form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.secondary-btn {
+  background: #e2f2fc;
+  color: #105d86;
+}
+
+.secondary-btn:hover {
+  transform: none;
+  box-shadow: none;
+  background: #d0e8f7;
+}
+
+.danger-btn {
+  background: #ffe7e2;
+  color: #a4372f;
+}
+
+.danger-btn:hover {
+  transform: none;
+  box-shadow: none;
+  background: #ffd8cf;
+}
+
+.admin-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-row {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-row strong {
+  display: block;
+}
+
+.admin-row p {
+  margin: 4px 0 0;
+  color: #5a7288;
+  font-size: 0.82rem;
+}
+
+.admin-row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.student-card {
+  margin-top: 14px;
+}
+
+.student-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.student-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.student-row {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.student-main strong {
+  display: block;
+}
+
+.student-main p {
+  margin: 4px 0 0;
+  font-size: 0.84rem;
+  color: #4f687f;
+}
+
+.student-metrics {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: #36516a;
+}
+
 .dashboard-form {
   margin-top: 18px;
   display: grid;
@@ -596,9 +770,81 @@ textarea {
   font-size: 0.92rem;
 }
 
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(6, 32, 49, 0.52);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+}
+
+.auth-modal {
+  width: min(420px, 92vw);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px;
+  position: relative;
+}
+
+.auth-modal h3 {
+  margin: 0;
+}
+
+.auth-modal > p {
+  margin: 8px 0 12px;
+  color: #597188;
+  font-size: 0.9rem;
+}
+
+.auth-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  padding: 0;
+  background: #e8f2fb;
+  color: #104f72;
+}
+
+.auth-close:hover {
+  transform: none;
+  box-shadow: none;
+  background: #d8e9f8;
+}
+
+.auth-form {
+  display: grid;
+  gap: 10px;
+}
+
+.auth-switch {
+  margin-top: 10px;
+  background: transparent;
+  color: #16628d;
+  border: 0;
+  padding: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.auth-switch:hover {
+  transform: none;
+  box-shadow: none;
+  filter: none;
+  text-decoration: underline;
+  background: transparent;
+}
+
 @media (max-width: 1050px) {
   .courses-grid,
   .enrollment-grid,
+  .admin-grid,
   .gallery-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -629,6 +875,7 @@ textarea {
   .nav-actions {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .notif-menu {
@@ -641,6 +888,7 @@ textarea {
   .courses-grid,
   .dashboard-form,
   .enrollment-grid,
+  .admin-grid,
   .gallery-grid {
     grid-template-columns: 1fr;
   }

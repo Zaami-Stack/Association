@@ -194,6 +194,78 @@ const seedLessons = [
   }
 ];
 
+const seedGalleryPhotos = [
+  {
+    id: "gallery-1",
+    title: "Conversation Circle",
+    imageUrl:
+      "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80",
+    position: 1,
+    createdAt: "2026-02-10T10:00:00.000Z"
+  },
+  {
+    id: "gallery-2",
+    title: "Team Practice",
+    imageUrl:
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
+    position: 2,
+    createdAt: "2026-02-10T10:01:00.000Z"
+  },
+  {
+    id: "gallery-3",
+    title: "Spanish Workshop",
+    imageUrl:
+      "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1200&q=80",
+    position: 3,
+    createdAt: "2026-02-10T10:02:00.000Z"
+  },
+  {
+    id: "gallery-4",
+    title: "Fluency Lab",
+    imageUrl:
+      "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80",
+    position: 4,
+    createdAt: "2026-02-10T10:03:00.000Z"
+  },
+  {
+    id: "gallery-5",
+    title: "Business English",
+    imageUrl:
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+    position: 5,
+    createdAt: "2026-02-10T10:04:00.000Z"
+  },
+  {
+    id: "gallery-6",
+    title: "French Foundations",
+    imageUrl:
+      "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=1200&q=80",
+    position: 6,
+    createdAt: "2026-02-10T10:05:00.000Z"
+  }
+];
+
+const seedNotifications = [
+  {
+    id: "note-1",
+    title: "Spanish A1 batch opens Monday",
+    message: "New beginner cohort starts this Monday. Enrollment is now open.",
+    createdAt: "2026-02-20T11:00:00.000Z"
+  },
+  {
+    id: "note-2",
+    title: "English speaking workshop this week",
+    message: "Interactive speaking practice with coaches on Thursday evening.",
+    createdAt: "2026-02-21T09:30:00.000Z"
+  },
+  {
+    id: "note-3",
+    title: "Enrollment deadline update posted",
+    message: "Late registrations for current cycle close this Friday at 6 PM.",
+    createdAt: "2026-02-22T15:15:00.000Z"
+  }
+];
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
@@ -206,7 +278,10 @@ function getStore() {
       lessons: clone(seedLessons),
       students: [],
       enrollments: [],
-      lessonProgress: []
+      lessonProgress: [],
+      users: [],
+      galleryPhotos: clone(seedGalleryPhotos),
+      notifications: clone(seedNotifications)
     };
   }
 
@@ -221,7 +296,8 @@ module.exports = {
   seedLanguages,
   seedCourses,
   seedLessons,
+  seedGalleryPhotos,
+  seedNotifications,
   getStore,
   createId
 };
-

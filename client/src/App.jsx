@@ -1,5 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
-import { enrollStudent, getCourses, getLanguages, getStats } from "./api";
+import {
+  createGalleryPhoto,
+  createNotification,
+  deleteGalleryPhoto,
+  deleteNotification,
+  enrollStudent,
+  getAdminStudents,
+  getCourses,
+  getGalleryPhotos,
+  getLanguages,
+  getNotifications,
+  getSession,
+  getStats,
+  login,
+  logout,
+  signup,
+  updateGalleryPhoto
+} from "./api";
 
 const initialEnrollForm = {
   fullName: "",
@@ -7,38 +24,39 @@ const initialEnrollForm = {
   courseId: ""
 };
 
-const galleryPhotos = [
-  {
-    src: "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80",
-    title: "Conversation Circle"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
-    title: "Team Practice"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1200&q=80",
-    title: "Spanish Workshop"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80",
-    title: "Fluency Lab"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
-    title: "Business English"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=1200&q=80",
-    title: "French Foundations"
-  }
-];
+const initialLoginForm = {
+  email: "",
+  password: ""
+};
 
-const navNotifications = [
-  { id: 1, title: "Spanish A1 batch opens Monday", time: "Today" },
-  { id: 2, title: "English speaking workshop this week", time: "2h ago" },
-  { id: 3, title: "Enrollment deadline update posted", time: "1d ago" }
-];
+const initialSignupForm = {
+  name: "",
+  email: "",
+  password: ""
+};
+
+const initialGalleryForm = {
+  title: "",
+  imageUrl: "",
+  position: 0
+};
+
+const initialNotificationForm = {
+  title: "",
+  message: ""
+};
+
+function formatDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(date);
+}
 
 function App() {
   const [stats, setStats] = useState({
@@ -49,15 +67,39 @@ function App() {
   });
   const [languages, setLanguages] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [galleryPhotos, setGalleryPhotos] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const [search, setSearch] = useState("");
   const [loadingCatalog, setLoadingCatalog] = useState(true);
   const [catalogError, setCatalogError] = useState("");
 
+  const [sessionLoading, setSessionLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
+  const [loginForm, setLoginForm] = useState(initialLoginForm);
+  const [signupForm, setSignupForm] = useState(initialSignupForm);
+  const [authMessage, setAuthMessage] = useState("");
+  const [authSubmitting, setAuthSubmitting] = useState(false);
+
   const [enrollForm, setEnrollForm] = useState(initialEnrollForm);
   const [enrollSubmitting, setEnrollSubmitting] = useState(false);
   const [enrollMessage, setEnrollMessage] = useState("");
+
   const [notifOpen, setNotifOpen] = useState(false);
+
+  const [adminStudents, setAdminStudents] = useState([]);
+  const [adminLoading, setAdminLoading] = useState(false);
+  const [adminError, setAdminError] = useState("");
+  const [galleryForm, setGalleryForm] = useState(initialGalleryForm);
+  const [editingPhotoId, setEditingPhotoId] = useState("");
+  const [gallerySubmitting, setGallerySubmitting] = useState(false);
+  const [notificationForm, setNotificationForm] = useState(initialNotificationForm);
+  const [notificationSubmitting, setNotificationSubmitting] = useState(false);
+  const [dashboardMessage, setDashboardMessage] = useState("");
+
+  const isAdmin = user?.role === "admin";
 
   const filteredCourses = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -73,7 +115,8 @@ function App() {
   }, [courses, search, selectedLanguage]);
 
   useEffect(() => {
-    void refreshCatalog();
+    void refreshSession();
+    void refreshPublicData();
   }, []);
 
   useEffect(() => {
@@ -86,6 +129,7 @@ function App() {
     function closeOnEscape(event) {
       if (event.key === "Escape") {
         setNotifOpen(false);
+        setAuthOpen(false);
       }
     }
 
@@ -93,22 +137,62 @@ function App() {
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, []);
 
-  async function refreshCatalog() {
+  useEffect(() => {
+    if (isAdmin) {
+      void refreshAdminStudents();
+    } else {
+      setAdminStudents([]);
+      setAdminError("");
+      setDashboardMessage("");
+    }
+  }, [isAdmin]);
+
+  async function refreshSession() {
+    setSessionLoading(true);
+    try {
+      const payload = await getSession();
+      setUser(payload?.authenticated ? payload.user : null);
+    } catch {
+      setUser(null);
+    } finally {
+      setSessionLoading(false);
+    }
+  }
+
+  async function refreshPublicData() {
     setLoadingCatalog(true);
     setCatalogError("");
     try {
-      const [statsData, languageData, courseData] = await Promise.all([
+      const [statsData, languageData, courseData, galleryData, notificationsData] = await Promise.all([
         getStats(),
         getLanguages(),
-        getCourses()
+        getCourses(),
+        getGalleryPhotos(),
+        getNotifications(10)
       ]);
       setStats(statsData);
       setLanguages(languageData);
       setCourses(courseData);
+      setGalleryPhotos(Array.isArray(galleryData) ? galleryData : []);
+      setNotifications(Array.isArray(notificationsData) ? notificationsData : []);
     } catch (error) {
       setCatalogError(error.message || "Unable to load data.");
     } finally {
       setLoadingCatalog(false);
+    }
+  }
+
+  async function refreshAdminStudents() {
+    setAdminLoading(true);
+    setAdminError("");
+    try {
+      const students = await getAdminStudents();
+      setAdminStudents(Array.isArray(students) ? students : []);
+    } catch (error) {
+      setAdminStudents([]);
+      setAdminError(error.message || "Failed to load students.");
+    } finally {
+      setAdminLoading(false);
     }
   }
 
@@ -128,7 +212,7 @@ function App() {
         `Enrollment saved for ${response.student.fullName} in "${response.course.title}".`
       );
       setEnrollForm((previous) => ({ ...previous, fullName: "", email: "" }));
-      await refreshCatalog();
+      await Promise.all([refreshPublicData(), isAdmin ? refreshAdminStudents() : Promise.resolve()]);
     } catch (error) {
       setEnrollMessage(error.message || "Enrollment failed.");
     } finally {
@@ -142,6 +226,149 @@ function App() {
     const target = document.getElementById("enroll");
     if (target) {
       target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function openAuth(mode) {
+    setAuthMode(mode);
+    setAuthMessage("");
+    setAuthOpen(true);
+    setNotifOpen(false);
+  }
+
+  async function handleLogin(event) {
+    event.preventDefault();
+    setAuthSubmitting(true);
+    setAuthMessage("");
+    try {
+      const response = await login({
+        email: loginForm.email.trim().toLowerCase(),
+        password: loginForm.password
+      });
+      setUser(response.user);
+      setLoginForm(initialLoginForm);
+      setAuthOpen(false);
+    } catch (error) {
+      setAuthMessage(error.message || "Login failed.");
+    } finally {
+      setAuthSubmitting(false);
+    }
+  }
+
+  async function handleSignup(event) {
+    event.preventDefault();
+    setAuthSubmitting(true);
+    setAuthMessage("");
+    try {
+      const response = await signup({
+        name: signupForm.name.trim(),
+        email: signupForm.email.trim().toLowerCase(),
+        password: signupForm.password
+      });
+      setUser(response.user);
+      setSignupForm(initialSignupForm);
+      setAuthOpen(false);
+    } catch (error) {
+      setAuthMessage(error.message || "Signup failed.");
+    } finally {
+      setAuthSubmitting(false);
+    }
+  }
+
+  async function handleLogout() {
+    setDashboardMessage("");
+    try {
+      await logout();
+    } finally {
+      setUser(null);
+      setNotifOpen(false);
+    }
+  }
+
+  function startEditPhoto(photo) {
+    setEditingPhotoId(photo.id);
+    setGalleryForm({
+      title: photo.title,
+      imageUrl: photo.imageUrl,
+      position: Number(photo.position || 0)
+    });
+    setDashboardMessage("");
+  }
+
+  function cancelPhotoEdit() {
+    setEditingPhotoId("");
+    setGalleryForm(initialGalleryForm);
+    setDashboardMessage("");
+  }
+
+  async function handleSavePhoto(event) {
+    event.preventDefault();
+    setGallerySubmitting(true);
+    setDashboardMessage("");
+    try {
+      const payload = {
+        title: galleryForm.title.trim(),
+        imageUrl: galleryForm.imageUrl.trim(),
+        position: Number(galleryForm.position || 0)
+      };
+
+      if (editingPhotoId) {
+        await updateGalleryPhoto(editingPhotoId, payload);
+        setDashboardMessage("Gallery photo updated.");
+      } else {
+        await createGalleryPhoto(payload);
+        setDashboardMessage("Gallery photo created.");
+      }
+      cancelPhotoEdit();
+      await refreshPublicData();
+    } catch (error) {
+      setDashboardMessage(error.message || "Could not save gallery photo.");
+    } finally {
+      setGallerySubmitting(false);
+    }
+  }
+
+  async function handleDeletePhoto(photoId) {
+    setDashboardMessage("");
+    try {
+      await deleteGalleryPhoto(photoId);
+      if (editingPhotoId === photoId) {
+        cancelPhotoEdit();
+      }
+      setDashboardMessage("Gallery photo removed.");
+      await refreshPublicData();
+    } catch (error) {
+      setDashboardMessage(error.message || "Could not remove gallery photo.");
+    }
+  }
+
+  async function handleCreateNotification(event) {
+    event.preventDefault();
+    setNotificationSubmitting(true);
+    setDashboardMessage("");
+    try {
+      await createNotification({
+        title: notificationForm.title.trim(),
+        message: notificationForm.message.trim()
+      });
+      setNotificationForm(initialNotificationForm);
+      setDashboardMessage("Notification published.");
+      await refreshPublicData();
+    } catch (error) {
+      setDashboardMessage(error.message || "Could not publish notification.");
+    } finally {
+      setNotificationSubmitting(false);
+    }
+  }
+
+  async function handleDeleteNotification(notificationId) {
+    setDashboardMessage("");
+    try {
+      await deleteNotification(notificationId);
+      setDashboardMessage("Notification removed.");
+      await refreshPublicData();
+    } catch (error) {
+      setDashboardMessage(error.message || "Could not remove notification.");
     }
   }
 
@@ -167,6 +394,11 @@ function App() {
               <a href="#enroll" onClick={() => setNotifOpen(false)}>
                 Enroll
               </a>
+              {isAdmin ? (
+                <a href="#dashboard" onClick={() => setNotifOpen(false)}>
+                  Dashboard
+                </a>
+              ) : null}
             </nav>
 
             <div className="notif-wrap">
@@ -179,19 +411,42 @@ function App() {
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M15 17h5l-1.4-1.4a2 2 0 0 1-.6-1.4V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5m6 0a3 3 0 1 1-6 0" />
                 </svg>
-                <span className="notif-badge">{navNotifications.length}</span>
+                <span className="notif-badge">{notifications.length}</span>
               </button>
 
               {notifOpen ? (
                 <div className="notif-menu">
                   <div className="notif-menu-title">Notifications</div>
-                  {navNotifications.map((note) => (
+                  {notifications.length === 0 ? <p className="notif-empty">No notifications.</p> : null}
+                  {notifications.map((note) => (
                     <article key={note.id} className="notif-item">
                       <p>{note.title}</p>
-                      <span>{note.time}</span>
+                      <span>{formatDate(note.createdAt)}</span>
                     </article>
                   ))}
                 </div>
+              ) : null}
+            </div>
+
+            <div className="auth-actions">
+              {sessionLoading ? <span className="auth-chip">Loading...</span> : null}
+              {!sessionLoading && !user ? (
+                <>
+                  <button type="button" className="nav-small-btn" onClick={() => openAuth("login")}>
+                    Login
+                  </button>
+                  <button type="button" className="nav-small-btn alt" onClick={() => openAuth("signup")}>
+                    Sign Up
+                  </button>
+                </>
+              ) : null}
+              {!sessionLoading && user ? (
+                <>
+                  <span className="auth-chip">{user.name || user.email}</span>
+                  <button type="button" className="nav-small-btn alt" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </>
               ) : null}
             </div>
           </div>
@@ -308,10 +563,10 @@ function App() {
           <div className="gallery-grid">
             {galleryPhotos.map((photo, index) => (
               <article
-                key={photo.title}
+                key={photo.id}
                 className={`gallery-card ${index === 0 ? "gallery-card-featured" : ""}`}
               >
-                <img src={photo.src} alt={photo.title} loading="lazy" />
+                <img src={photo.imageUrl} alt={photo.title} loading="lazy" />
                 <div className="gallery-caption">{photo.title}</div>
               </article>
             ))}
@@ -368,11 +623,250 @@ function App() {
         </div>
       </section>
 
+      {isAdmin ? (
+        <section id="dashboard" className="dashboard">
+          <div className="container">
+            <div className="section-head">
+              <h2>Admin Dashboard</h2>
+              <p>Only admin can access this section.</p>
+            </div>
+            {dashboardMessage ? <p className="status">{dashboardMessage}</p> : null}
+            {adminError ? <p className="status error">{adminError}</p> : null}
+
+            <div className="admin-grid">
+              <article className="admin-card">
+                <h3>Manage Gallery</h3>
+                <form className="admin-form" onSubmit={handleSavePhoto}>
+                  <input
+                    type="text"
+                    placeholder="Photo title"
+                    value={galleryForm.title}
+                    onChange={(event) =>
+                      setGalleryForm((previous) => ({ ...previous, title: event.target.value }))
+                    }
+                    required
+                  />
+                  <input
+                    type="url"
+                    placeholder="Image URL"
+                    value={galleryForm.imageUrl}
+                    onChange={(event) =>
+                      setGalleryForm((previous) => ({ ...previous, imageUrl: event.target.value }))
+                    }
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Position"
+                    value={galleryForm.position}
+                    onChange={(event) =>
+                      setGalleryForm((previous) => ({
+                        ...previous,
+                        position: Number(event.target.value || 0)
+                      }))
+                    }
+                    min="0"
+                  />
+                  <div className="admin-form-actions">
+                    <button type="submit" disabled={gallerySubmitting}>
+                      {gallerySubmitting
+                        ? "Saving..."
+                        : editingPhotoId
+                          ? "Update Photo"
+                          : "Add Photo"}
+                    </button>
+                    {editingPhotoId ? (
+                      <button type="button" className="secondary-btn" onClick={cancelPhotoEdit}>
+                        Cancel
+                      </button>
+                    ) : null}
+                  </div>
+                </form>
+                <div className="admin-list">
+                  {galleryPhotos.map((photo) => (
+                    <div key={`admin-photo-${photo.id}`} className="admin-row">
+                      <div>
+                        <strong>{photo.title}</strong>
+                        <p>#{photo.position}</p>
+                      </div>
+                      <div className="admin-row-actions">
+                        <button type="button" className="secondary-btn" onClick={() => startEditPhoto(photo)}>
+                          Edit
+                        </button>
+                        <button type="button" className="danger-btn" onClick={() => handleDeletePhoto(photo.id)}>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </article>
+
+              <article className="admin-card">
+                <h3>Manage Notifications</h3>
+                <form className="admin-form" onSubmit={handleCreateNotification}>
+                  <input
+                    type="text"
+                    placeholder="Notification title"
+                    value={notificationForm.title}
+                    onChange={(event) =>
+                      setNotificationForm((previous) => ({ ...previous, title: event.target.value }))
+                    }
+                    required
+                  />
+                  <textarea
+                    placeholder="Notification message"
+                    value={notificationForm.message}
+                    onChange={(event) =>
+                      setNotificationForm((previous) => ({ ...previous, message: event.target.value }))
+                    }
+                  />
+                  <button type="submit" disabled={notificationSubmitting}>
+                    {notificationSubmitting ? "Publishing..." : "Publish Notification"}
+                  </button>
+                </form>
+                <div className="admin-list">
+                  {notifications.map((notification) => (
+                    <div key={`admin-note-${notification.id}`} className="admin-row">
+                      <div>
+                        <strong>{notification.title}</strong>
+                        <p>{formatDate(notification.createdAt)}</p>
+                      </div>
+                      <div className="admin-row-actions">
+                        <button
+                          type="button"
+                          className="danger-btn"
+                          onClick={() => handleDeleteNotification(notification.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            </div>
+
+            <article className="admin-card student-card">
+              <div className="student-head">
+                <h3>Track Students</h3>
+                <button type="button" className="secondary-btn" onClick={() => refreshAdminStudents()}>
+                  Refresh
+                </button>
+              </div>
+              {adminLoading ? <p className="status">Loading students...</p> : null}
+              {!adminLoading && adminStudents.length === 0 ? (
+                <p className="status">No students found yet.</p>
+              ) : null}
+              <div className="student-list">
+                {adminStudents.map((student) => (
+                  <div key={`student-${student.studentId}`} className="student-row">
+                    <div className="student-main">
+                      <strong>{student.fullName}</strong>
+                      <p>{student.email}</p>
+                    </div>
+                    <div className="student-metrics">
+                      <span>Enrollments: {student.enrollmentCount}</span>
+                      <span>
+                        Progress: {student.completedLessons}/{student.totalLessons} ({student.completionRate}%)
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </article>
+          </div>
+        </section>
+      ) : null}
+
       <footer className="footer">
         <div className="container">
           <p>Association Language Academy | Full-stack language learning platform.</p>
         </div>
       </footer>
+
+      {authOpen ? (
+        <div className="auth-modal-overlay" onClick={() => setAuthOpen(false)}>
+          <div className="auth-modal" onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="auth-close" onClick={() => setAuthOpen(false)}>
+              x
+            </button>
+            {authMode === "login" ? (
+              <>
+                <h3>Login</h3>
+                <p>Use your account credentials.</p>
+                <form className="auth-form" onSubmit={handleLogin}>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={loginForm.email}
+                    onChange={(event) =>
+                      setLoginForm((previous) => ({ ...previous, email: event.target.value }))
+                    }
+                    required
+                  />
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={loginForm.password}
+                    onChange={(event) =>
+                      setLoginForm((previous) => ({ ...previous, password: event.target.value }))
+                    }
+                    required
+                  />
+                  <button type="submit" disabled={authSubmitting}>
+                    {authSubmitting ? "Signing in..." : "Login"}
+                  </button>
+                </form>
+                <button type="button" className="auth-switch" onClick={() => setAuthMode("signup")}>
+                  Need an account? Sign up
+                </button>
+              </>
+            ) : (
+              <>
+                <h3>Sign Up</h3>
+                <p>Create a student account.</p>
+                <form className="auth-form" onSubmit={handleSignup}>
+                  <input
+                    type="text"
+                    placeholder="Full name"
+                    value={signupForm.name}
+                    onChange={(event) =>
+                      setSignupForm((previous) => ({ ...previous, name: event.target.value }))
+                    }
+                    required
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={signupForm.email}
+                    onChange={(event) =>
+                      setSignupForm((previous) => ({ ...previous, email: event.target.value }))
+                    }
+                    required
+                  />
+                  <input
+                    type="password"
+                    placeholder="Password (min 8 chars)"
+                    value={signupForm.password}
+                    onChange={(event) =>
+                      setSignupForm((previous) => ({ ...previous, password: event.target.value }))
+                    }
+                    required
+                  />
+                  <button type="submit" disabled={authSubmitting}>
+                    {authSubmitting ? "Creating..." : "Sign Up"}
+                  </button>
+                </form>
+                <button type="button" className="auth-switch" onClick={() => setAuthMode("login")}>
+                  Already have an account? Login
+                </button>
+              </>
+            )}
+            {authMessage ? <p className="status error">{authMessage}</p> : null}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
