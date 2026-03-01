@@ -37,6 +37,10 @@ a {
   margin: 0 auto;
 }
 
+.header .container {
+  width: min(1280px, 96vw);
+}
+
 .header {
   position: sticky;
   top: 0;
@@ -57,7 +61,7 @@ a {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   flex-wrap: nowrap;
 }
 
@@ -183,7 +187,7 @@ a {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
   padding: 7px 10px;
-  max-width: 170px;
+  max-width: 150px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -206,7 +210,7 @@ a {
 
 .nav nav {
   display: flex;
-  gap: clamp(10px, 1vw, 18px);
+  gap: clamp(8px, 0.9vw, 14px);
   align-items: center;
   flex-wrap: nowrap;
   min-width: 0;
@@ -1098,6 +1102,30 @@ textarea {
 
   .enroll-wrap {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1280px) {
+  .logo-text {
+    font-size: 1.58rem;
+  }
+
+  .nav nav a {
+    font-size: 0.78rem;
+  }
+
+  .nav-small-btn {
+    font-size: 0.76rem;
+    padding: 7px 10px;
+  }
+
+  .auth-chip {
+    max-width: 126px;
+  }
+
+  .lang-picker select {
+    min-width: 98px;
+    padding-right: 26px;
   }
 }
 
