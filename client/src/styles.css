@@ -1,13 +1,13 @@
 :root {
-  --bg: #eaf2ff;
-  --surface: #f9fbff;
-  --surface-strong: #ffffff;
-  --ink: #0f2237;
-  --ink-soft: #4a6079;
-  --line: #d4e2f2;
-  --brand: #0b7ca8;
-  --brand-strong: #075c80;
-  --accent: #ff6e42;
+  --bg: #fff0e0;
+  --surface: #fef8ec;
+  --surface-strong: #fffdf7;
+  --ink: #143c5c;
+  --ink-soft: #5b7592;
+  --line: #eadcc2;
+  --brand: #105080;
+  --brand-strong: #0b4c79;
+  --accent: #e87020;
   --radius: 18px;
 }
 
@@ -24,8 +24,8 @@ body {
   color: var(--ink);
   font-family: "Sora", sans-serif;
   background:
-    radial-gradient(circle at 20% 18%, #f9fdff 0%, #eaf2ff 45%, #d9ecff 100%),
-    linear-gradient(130deg, rgba(11, 124, 168, 0.08), rgba(255, 110, 66, 0.08));
+    radial-gradient(circle at 20% 18%, #fff8ed 0%, #fff0e0 45%, #f4e7d1 100%),
+    linear-gradient(130deg, rgba(16, 80, 128, 0.09), rgba(232, 112, 32, 0.08));
 }
 
 a {
@@ -41,7 +41,7 @@ a {
   position: sticky;
   top: 0;
   z-index: 70;
-  background: linear-gradient(90deg, rgba(8, 49, 74, 0.94), rgba(7, 79, 103, 0.93));
+  background: linear-gradient(90deg, rgba(11, 76, 121, 0.96), rgba(16, 80, 128, 0.95));
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   backdrop-filter: blur(10px);
   animation: slide-down 0.45s ease both;
@@ -179,7 +179,7 @@ a {
 }
 
 .nav nav a:hover {
-  border-color: #ffc9b8;
+  border-color: #f1a56f;
 }
 
 .nav-small-btn {
@@ -244,7 +244,7 @@ a {
   min-width: 18px;
   height: 18px;
   border-radius: 999px;
-  background: #ff7a51;
+  background: #e87020;
   color: #fff;
   font-size: 0.68rem;
   line-height: 18px;
@@ -346,7 +346,7 @@ a {
   padding: 96px 0 108px;
   color: #f0fcff;
   background:
-    linear-gradient(rgba(7, 51, 70, 0.78), rgba(10, 67, 86, 0.8)),
+    linear-gradient(rgba(11, 76, 121, 0.8), rgba(11, 62, 97, 0.82)),
     url("https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1500&q=80")
       center/cover;
 }
@@ -358,7 +358,7 @@ a {
   width: 420px;
   height: 420px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 110, 66, 0.44), rgba(255, 110, 66, 0));
+  background: radial-gradient(circle, rgba(232, 112, 32, 0.44), rgba(232, 112, 32, 0));
 }
 
 .hero-content {
@@ -386,13 +386,13 @@ a {
 }
 
 .hero h1 span {
-  color: #ffd3b7;
+  color: #ffc79a;
 }
 
 .hero-desc {
   margin: 0 0 30px;
   max-width: 690px;
-  color: #d9f4ff;
+  color: #e3f2ff;
   font-size: 1.04rem;
 }
 
@@ -400,7 +400,7 @@ a {
 button {
   border: 0;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent), #ff9a54);
+  background: linear-gradient(90deg, var(--accent), #f08b42);
   color: #fff;
   font: inherit;
   font-weight: 700;
@@ -417,7 +417,7 @@ button {
 .hero-btn:hover,
 button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(255, 110, 66, 0.28);
+  box-shadow: 0 10px 24px rgba(232, 112, 32, 0.28);
   filter: saturate(108%);
 }
 
@@ -529,7 +529,7 @@ button:hover {
 .enroll {
   padding: 62px 0;
   background:
-    linear-gradient(165deg, rgba(11, 124, 168, 0.08), rgba(255, 110, 66, 0.09)),
+    linear-gradient(165deg, rgba(16, 80, 128, 0.08), rgba(232, 112, 32, 0.09)),
     var(--surface);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -940,8 +940,8 @@ textarea {
 
 .footer {
   padding: 24px 0 34px;
-  background: #0b3652;
-  color: #d8f0ff;
+  background: #0b4c79;
+  color: #ecf4fb;
 }
 
 .footer p {
@@ -1119,7 +1119,7 @@ textarea {
   }
 
   .nav nav a:hover {
-    border-color: #ffc9b8;
+    border-color: #f1a56f;
     background: rgba(255, 255, 255, 0.12);
   }
 
