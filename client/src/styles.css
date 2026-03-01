@@ -189,6 +189,8 @@ a {
   display: flex;
   align-items: center;
   color: #f3fbff;
+  margin-right: clamp(14px, 2vw, 32px);
+  flex-shrink: 0;
 }
 
 .logo-text {
@@ -200,7 +202,7 @@ a {
 
 .nav nav {
   display: flex;
-  gap: 16px;
+  gap: 20px;
 }
 
 .nav nav a {
