@@ -824,7 +824,7 @@ function App() {
 
       <footer className="footer">
         <div className="container">
-          <p>Maison de Savoir | Language learning for every level.</p>
+          <p>Maison de Savoir</p>
         </div>
       </footer>
 
