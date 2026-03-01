@@ -10,6 +10,7 @@ import {
   getAdminStudents,
   getCourses,
   getGalleryPhotos,
+  getHeroImage,
   getLanguages,
   getNotifications,
   getSession,
@@ -18,6 +19,7 @@ import {
   logout,
   signup,
   updateCourse,
+  updateHeroImage,
   updateGalleryPhoto
 } from "./api";
 
@@ -58,6 +60,9 @@ const initialProgramForm = {
   description: "",
   imageUrl: ""
 };
+
+const DEFAULT_HERO_IMAGE_URL =
+  "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1500&q=80";
 
 const SUPPORTED_UI_LANGS = ["en", "fr", "es"];
 
@@ -175,6 +180,9 @@ const UI_COPY = {
       publish: "Publish Notification",
       publishing: "Publishing...",
       managePrograms: "Manage Programs",
+      manageHero: "Manage Hero Image",
+      heroImageUrl: "Hero image URL",
+      updateHero: "Update Hero Image",
       programLanguage: "Program language",
       programTitle: "Program title",
       programLevel: "Program level",
@@ -202,7 +210,9 @@ const UI_COPY = {
       programUpdated: "Program updated.",
       programRemoved: "Program removed.",
       programSaveError: "Could not create program.",
-      programDeleteError: "Could not remove program."
+      programDeleteError: "Could not remove program.",
+      heroUpdated: "Hero image updated.",
+      heroUpdateError: "Could not update hero image."
     },
     common: {
       update: "Update",
@@ -326,6 +336,9 @@ const UI_COPY = {
       publish: "Publier la notification",
       publishing: "Publication...",
       managePrograms: "Gerer les programmes",
+      manageHero: "Gerer l'image hero",
+      heroImageUrl: "URL de l'image hero",
+      updateHero: "Mettre a jour l'image hero",
       programLanguage: "Langue du programme",
       programTitle: "Titre du programme",
       programLevel: "Niveau du programme",
@@ -353,7 +366,9 @@ const UI_COPY = {
       programUpdated: "Programme mis a jour.",
       programRemoved: "Programme supprime.",
       programSaveError: "Impossible de creer le programme.",
-      programDeleteError: "Impossible de supprimer le programme."
+      programDeleteError: "Impossible de supprimer le programme.",
+      heroUpdated: "Image hero mise a jour.",
+      heroUpdateError: "Impossible de mettre a jour l'image hero."
     },
     common: {
       update: "Mettre a jour",
@@ -477,6 +492,9 @@ const UI_COPY = {
       publish: "Publicar notificacion",
       publishing: "Publicando...",
       managePrograms: "Gestionar programas",
+      manageHero: "Gestionar imagen hero",
+      heroImageUrl: "URL de imagen hero",
+      updateHero: "Actualizar imagen hero",
       programLanguage: "Idioma del programa",
       programTitle: "Titulo del programa",
       programLevel: "Nivel del programa",
@@ -504,7 +522,9 @@ const UI_COPY = {
       programUpdated: "Programa actualizado.",
       programRemoved: "Programa eliminado.",
       programSaveError: "No se pudo crear el programa.",
-      programDeleteError: "No se pudo eliminar el programa."
+      programDeleteError: "No se pudo eliminar el programa.",
+      heroUpdated: "Imagen hero actualizada.",
+      heroUpdateError: "No se pudo actualizar la imagen hero."
     },
     common: {
       update: "Actualizar",
@@ -579,6 +599,7 @@ function App() {
   const [courses, setCourses] = useState([]);
   const [galleryPhotos, setGalleryPhotos] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [heroImageUrl, setHeroImageUrl] = useState(DEFAULT_HERO_IMAGE_URL);
   const [uiLanguage, setUiLanguage] = useState(getInitialUiLanguage);
   const [selectedLanguage, setSelectedLanguage] = useState("all");
   const [search, setSearch] = useState("");
@@ -612,6 +633,8 @@ function App() {
   const [programForm, setProgramForm] = useState(initialProgramForm);
   const [editingProgramId, setEditingProgramId] = useState("");
   const [programSubmitting, setProgramSubmitting] = useState(false);
+  const [heroForm, setHeroForm] = useState({ imageUrl: DEFAULT_HERO_IMAGE_URL });
+  const [heroSubmitting, setHeroSubmitting] = useState(false);
   const [dashboardMessage, setDashboardMessage] = useState("");
 
   const copy = useMemo(() => UI_COPY[uiLanguage] || UI_COPY.en, [uiLanguage]);
@@ -716,18 +739,30 @@ function App() {
     setLoadingCatalog(true);
     setCatalogError("");
     try {
-      const [statsData, languageData, courseData, galleryData, notificationsData] = await Promise.all([
+      const [statsData, languageData, courseData, galleryData, notificationsData, heroData] = await Promise.all([
         getStats(),
         getLanguages(),
         getCourses(),
         getGalleryPhotos(),
-        getNotifications(10)
+        getNotifications(10),
+        getHeroImage()
       ]);
       setStats(statsData);
       setLanguages(languageData);
       setCourses(courseData);
       setGalleryPhotos(Array.isArray(galleryData) ? galleryData : []);
       setNotifications(Array.isArray(notificationsData) ? notificationsData : []);
+      setHeroImageUrl(
+        typeof heroData?.imageUrl === "string" && heroData.imageUrl.trim()
+          ? heroData.imageUrl.trim()
+          : DEFAULT_HERO_IMAGE_URL
+      );
+      setHeroForm({
+        imageUrl:
+          typeof heroData?.imageUrl === "string" && heroData.imageUrl.trim()
+            ? heroData.imageUrl.trim()
+            : DEFAULT_HERO_IMAGE_URL
+      });
     } catch (error) {
       setCatalogError(error.message || copy.errors.loadData);
     } finally {
@@ -1002,6 +1037,27 @@ function App() {
     }
   }
 
+  async function handleSaveHeroImage(event) {
+    event.preventDefault();
+    setHeroSubmitting(true);
+    setDashboardMessage("");
+    try {
+      const payload = { imageUrl: heroForm.imageUrl.trim() };
+      const updated = await updateHeroImage(payload);
+      const nextUrl =
+        typeof updated?.imageUrl === "string" && updated.imageUrl.trim()
+          ? updated.imageUrl.trim()
+          : payload.imageUrl;
+      setHeroImageUrl(nextUrl);
+      setHeroForm({ imageUrl: nextUrl });
+      setDashboardMessage(copy.dashboard.heroUpdated);
+    } catch (error) {
+      setDashboardMessage(error.message || copy.dashboard.heroUpdateError);
+    } finally {
+      setHeroSubmitting(false);
+    }
+  }
+
   return (
     <div className="page">
       {menuOpen ? (
@@ -1133,7 +1189,7 @@ function App() {
         </div>
       </header>
 
-      <section id="home" className="hero">
+      <section id="home" className="hero" style={{ "--hero-image": `url(${heroImageUrl})` }}>
         <div className="container hero-content">
           <p className="hero-tag">{copy.hero.tag}</p>
           <h1>
@@ -1571,6 +1627,22 @@ function App() {
                   ))}
                   {courses.length === 0 ? <p className="status">{copy.dashboard.noPrograms}</p> : null}
                 </div>
+              </article>
+
+              <article className="admin-card">
+                <h3>{copy.dashboard.manageHero}</h3>
+                <form className="admin-form" onSubmit={handleSaveHeroImage}>
+                  <input
+                    type="url"
+                    placeholder={copy.dashboard.heroImageUrl}
+                    value={heroForm.imageUrl}
+                    onChange={(event) => setHeroForm({ imageUrl: event.target.value })}
+                    required
+                  />
+                  <button type="submit" disabled={heroSubmitting}>
+                    {heroSubmitting ? copy.enroll.saving : copy.dashboard.updateHero}
+                  </button>
+                </form>
               </article>
             </div>
 

@@ -397,7 +397,10 @@ a {
   color: #f0fcff;
   background:
     linear-gradient(rgba(11, 76, 121, 0.8), rgba(11, 62, 97, 0.82)),
-    url("https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1500&q=80")
+    var(
+      --hero-image,
+      url("https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1500&q=80")
+    )
       center/cover;
 }
 

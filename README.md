@@ -60,6 +60,8 @@ The serverless backend routes are:
 - `POST /api/gallery` (admin)
 - `PATCH /api/gallery?id=` (admin)
 - `DELETE /api/gallery?id=` (admin)
+- `GET /api/hero`
+- `PATCH /api/hero` (admin)
 - `GET /api/notifications`
 - `POST /api/notifications` (admin)
 - `DELETE /api/notifications?id=` (admin)
