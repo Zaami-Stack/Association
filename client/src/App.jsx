@@ -376,8 +376,9 @@ function App() {
     <div className="page">
       <header className="header">
         <div className="container nav">
-          <div className="logo">
-            Association <span>Academy</span>
+          <div className="logo" aria-label="Maison de Savoir">
+            <img src="/aaaaa.jfif" alt="Maison de Savoir logo" />
+            <div className="logo-text">Maison de Savoir</div>
           </div>
 
           <div className="nav-actions">
@@ -457,12 +458,11 @@ function App() {
         <div className="container hero-content">
           <p className="hero-tag">Global communication starts here</p>
           <h1>
-            Learn Spanish, English, and more with your new full-stack
-            <span> Association Web Platform</span>
+            Learn Spanish, English, and more
+            <span> at Maison de Savoir</span>
           </h1>
           <p className="hero-desc">
-            Explore structured courses, enroll students, and track lesson progress with a complete
-            backend + frontend + database workflow.
+            Explore structured courses, enroll students, and follow learning progress step by step.
           </p>
           <a className="hero-btn" href="#courses" onClick={() => setNotifOpen(false)}>
             Start Learning
@@ -579,8 +579,8 @@ function App() {
           <div>
             <h2>Enroll a Student</h2>
             <p>
-              Use this form to register a student with email and name. The backend will create the
-              student and enrollment record in the database.
+              Use this form to register a student with email and name, then connect them to the
+              right course.
             </p>
           </div>
           <form className="enroll-form" onSubmit={handleEnrollSubmit}>
@@ -781,7 +781,7 @@ function App() {
 
       <footer className="footer">
         <div className="container">
-          <p>Association Language Academy | Full-stack language learning platform.</p>
+          <p>Maison de Savoir | Language learning for every level.</p>
         </div>
       </footer>
 
@@ -872,4 +872,3 @@ function App() {
 }
 
 export default App;
-

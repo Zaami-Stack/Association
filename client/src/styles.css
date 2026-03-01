@@ -78,14 +78,25 @@ a {
 }
 
 .logo {
-  font-family: "Fraunces", serif;
-  font-size: 1.86rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: #f3fbff;
-  letter-spacing: 0.01em;
 }
 
-.logo span {
-  color: #ffbfab;
+.logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.46);
+}
+
+.logo-text {
+  font-family: "Fraunces", serif;
+  font-size: 1.72rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .nav nav {
