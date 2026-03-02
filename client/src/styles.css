@@ -641,6 +641,9 @@ textarea {
 }
 
 .course-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -670,6 +673,9 @@ textarea {
 
 .course-content {
   padding: 16px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
 }
 
 .course-content h3,
@@ -689,6 +695,15 @@ textarea {
 .course-content p {
   color: #2f4b69;
   margin-bottom: 14px;
+}
+
+.course-content > p:last-of-type {
+  flex: 1 1 auto;
+}
+
+.course-content button {
+  margin-top: auto;
+  align-self: flex-start;
 }
 
 .course-content button,
