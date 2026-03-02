@@ -569,6 +569,15 @@ function translateCourseLevel(level, uiLanguage) {
   return String(level || "");
 }
 
+function getCurrentPath() {
+  if (typeof window === "undefined") {
+    return "/";
+  }
+
+  const normalized = String(window.location.pathname || "/").replace(/\/+$/, "");
+  return normalized || "/";
+}
+
 function App() {
   const [languages, setLanguages] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -612,6 +621,8 @@ function App() {
   const copy = useMemo(() => UI_COPY[uiLanguage] || UI_COPY.en, [uiLanguage]);
   const dateLocale = useMemo(() => getDateLocale(uiLanguage), [uiLanguage]);
   const isAdmin = user?.role === "admin";
+  const isDashboardRoute = getCurrentPath() === "/dashboard";
+  const sectionHrefPrefix = isDashboardRoute ? "/" : "";
 
   const filteredCourses = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -1017,23 +1028,23 @@ function App() {
           <div id="main-nav-panel" className={`nav-panel ${menuOpen ? "open" : ""}`}>
             <div className="nav-actions">
               <nav>
-                <a href="#home" onClick={handleNavClick}>
+                <a href={`${sectionHrefPrefix}#home`} onClick={handleNavClick}>
                   {copy.nav.home}
                 </a>
-                <a href="#about" onClick={handleNavClick}>
+                <a href={`${sectionHrefPrefix}#about`} onClick={handleNavClick}>
                   {copy.nav.about}
                 </a>
-                <a href="#courses" onClick={handleNavClick}>
+                <a href={`${sectionHrefPrefix}#courses`} onClick={handleNavClick}>
                   {copy.nav.courses}
                 </a>
-                <a href="#gallery" onClick={handleNavClick}>
+                <a href={`${sectionHrefPrefix}#gallery`} onClick={handleNavClick}>
                   {copy.nav.gallery}
                 </a>
-                <a href="#enroll" onClick={handleNavClick}>
+                <a href={`${sectionHrefPrefix}#enroll`} onClick={handleNavClick}>
                   {copy.nav.enroll}
                 </a>
                 {isAdmin ? (
-                  <a href="#dashboard" onClick={handleNavClick}>
+                  <a href="/dashboard" onClick={handleNavClick}>
                     {copy.nav.dashboard}
                   </a>
                 ) : null}
@@ -1126,6 +1137,8 @@ function App() {
         </div>
       </header>
 
+      {!isDashboardRoute ? (
+        <>
       <section
         id="home"
         className="hero"
@@ -1315,14 +1328,27 @@ function App() {
           </form>
         </div>
       </section>
+        </>
+      ) : null}
 
-      {isAdmin ? (
-        <section id="dashboard" className="dashboard">
+      {isDashboardRoute ? (
+        <section id="dashboard" className="dashboard dashboard-page">
           <div className="container">
             <div className="section-head">
               <h2>{copy.dashboard.heading}</h2>
               <p>{copy.dashboard.subtitle}</p>
             </div>
+            {sessionLoading ? <p className="status">{copy.auth.loading}</p> : null}
+            {!sessionLoading && !isAdmin ? (
+              <article className="admin-card dashboard-access-card">
+                <p className="status">{copy.dashboard.subtitle}</p>
+                <button type="button" onClick={() => openAuth("login")}>
+                  {copy.auth.login}
+                </button>
+              </article>
+            ) : null}
+            {!sessionLoading && isAdmin ? (
+              <>
             {dashboardMessage ? <p className="status">{dashboardMessage}</p> : null}
             {adminError ? <p className="status error">{adminError}</p> : null}
 
@@ -1576,6 +1602,8 @@ function App() {
                 ))}
               </div>
             </article>
+              </>
+            ) : null}
           </div>
         </section>
       ) : null}
